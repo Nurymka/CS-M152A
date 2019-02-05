@@ -16,7 +16,7 @@ module nexys3 (/*AUTOARG*/
    output [7:0] led;
    input        btnS;                 // single-step instruction
    input        btnR;                 // arst
-	input 		 btnSend;
+  input      btnSend;
    
    // Logic
    input        clk;                  // 100MHz
@@ -41,9 +41,9 @@ module nexys3 (/*AUTOARG*/
       
    reg [7:0]   inst_wd;
    reg         inst_vld;
-	reg			send_vld;
+  reg     send_vld;
    reg [2:0]   step_d;
-	reg [2:0] 	step_send;
+  reg [2:0]   step_send;
 
    reg [7:0]   inst_cnt;
    
@@ -85,49 +85,49 @@ module nexys3 (/*AUTOARG*/
    // ===========================================================================
 
    
-	wire is_btnS_posedge;
-	wire is_btnSend_posedge;
+  wire is_btnS_posedge;
+  wire is_btnSend_posedge;
    assign is_btnS_posedge = ~ step_d[0] & step_d[1];
-	assign is_btnSend_posedge = ~ step_send[0] & step_send[1];
-	
-	always @ (posedge clk)
+  assign is_btnSend_posedge = ~ step_send[0] & step_send[1];
+  
+  always @ (posedge clk)
      if (rst)
        begin
           inst_wd[7:0] <= 0;
           step_d[2:0]  <= 0;
-			 step_send[2:0] <= 0;
+       step_send[2:0] <= 0;
        end
-     else if (clk_en) // Down sampling
+     else if (clk_en_d) // Down sampling
        begin
-			 if (is_btnSend_posedge) begin
-				inst_wd[7] <= 1'b1;
-				inst_wd[6] <= 1'b1;
-				inst_wd[5:0] <= sw[5:0];
-			 end else
-				inst_wd[7:0] <= sw[7:0];
+       if (is_btnSend_posedge) begin
+        inst_wd[7] <= 1'b1;
+        inst_wd[6] <= 1'b1;
+        inst_wd[5:0] <= sw[5:0];
+       end else
+        inst_wd[7:0] <= sw[7:0];
           step_d[2:0]  <= {btnS, step_d[2:1]};
-			 step_send[2:0] <= {btnSend, step_send[2:1]};
+       step_send[2:0] <= {btnSend, step_send[2:1]};
        end
-	   
-	// Detecting posedge of btnS and btnSend
+     
+  // Detecting posedge of btnS and btnSend
    /*wire is_btnS_posedge;
-	wire is_btnSend_posedge;
+  wire is_btnSend_posedge;
    assign is_btnS_posedge = ~ step_d[0] & step_d[1];
-	assign is_btnSend_posedge = ~ step_send[0] & step_send[1];*/
+  assign is_btnSend_posedge = ~ step_send[0] & step_send[1];*/
    always @ (posedge clk)
      if (rst) begin
        inst_vld <= 1'b0;
-		 send_vld <= 1'b0;
+     send_vld <= 1'b0;
      end else if (clk_en_d) begin
-		 if (is_btnS_posedge || is_btnSend_posedge)
-			inst_vld <= 1'b1;
-		 else
-			inst_vld <= 1'b0;
-		 send_vld <= is_btnSend_posedge;
-	  end else begin
-	    inst_vld <= 0;
-		 send_vld <= 0;
-		end
+     if (is_btnS_posedge || is_btnSend_posedge)
+      inst_vld <= 1'b1;
+     else
+      inst_vld <= 1'b0;
+     send_vld <= is_btnSend_posedge;
+    end else begin
+      inst_vld <= 0;
+     send_vld <= 0;
+    end
 
    always @ (posedge clk)
      if (rst)
