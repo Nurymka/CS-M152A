@@ -6,8 +6,13 @@ module tb;
    reg       clk;
    reg       btnS;
    reg       btnR;
+
    
    integer   i;
+
+   reg [7:0] num_insns;
+   reg [7:0] cur_insn;
+   reg [7:0] txt_insns [0:1023];
    
    /*AUTOWIRE*/
    // Beginning of automatic wires (for undeclared instantiated-module outputs)
@@ -20,6 +25,7 @@ module tb;
      begin
         //$shm_open  ("dump", , ,1);
         //$shm_probe (tb, "ASTF");
+        $readmemb("/home/ise/vm_folder/lab2/txt/fibonacci.txt", txt_insns);
 
         clk = 0;
         btnR = 1;
@@ -27,15 +33,11 @@ module tb;
         #1000 btnR = 0;
         #1500000;
         
-        tskRunPUSH(0,4);
-        tskRunPUSH(0,0);
-        tskRunPUSH(1,3);
-        tskRunMULT(0,1,2);
-        tskRunADD(2,0,3);
-        tskRunSEND(0);
-        tskRunSEND(1);
-        tskRunSEND(2);
-        tskRunSEND(3);
+        num_insns = txt_insns[0];
+        for(i = 1; i <= num_insns; i = i + 1) begin
+          cur_insn = txt_insns[i];
+          tskRunInst(cur_insn);
+        end
         
         #1000;        
         $finish;
