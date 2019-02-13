@@ -1,0 +1,28 @@
+Stopwatch (top module):
+  Has a clocks module to create the four different clock rates
+  Has a counter for the seconds
+  Has a counter for the minutes that uses the seconds counter output to count the minutes properly
+  !!FOR SIMULATION: the clock passed in to the seconds counter module is the internal super fast clock instead of the correct 1Hz clock, so we can actually see the transition happen in simulation
+  
+
+
+Clocks:
+  Outputs four clocks at different rates
+  These clocks have a full duty cycle, so they can be better visualized in simulation
+  We just have to use always @ (POSEDGE some_clock) to use these varying clocks
+
+
+Counter60:
+  Used to handle counting to 59, then reset to 0
+  Can be used for either seconds or minutes, depending on the rate of the clock passed in
+  On reset, it outputs an "overflow" signal to increment the next counter. This can be passed from a seconds counter as the clock of the minutes counter
+  
+
+
+
+TODO:
+  1. Feed in valid_bit signal through the clocks module to pause the counting by just setting the valid bit off when the pause button is pressed. We just have to copy how it was done in lab 2
+  2. Button inputs and debouncing (copy from lab 2 again)
+  3. Pause counter module that takes in the input from the minutes counter and pauses the clocks when the minutes counter reaches 59
+  4. SELECT switch functionality by somehow switching around the clocks passed in to the counters, maybe have to create new counters that count by 2's 
+  5. Ask JIA to show us how to do the LED displays at the end
