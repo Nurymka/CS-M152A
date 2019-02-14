@@ -29,7 +29,7 @@ output reg increment_next;
 parameter cutoff = 59;
 
 initial count_value = 0;
-
+initial increment_next = 0;
 
 always @ (posedge clk) begin
 	if(rst) begin
@@ -51,3 +51,4 @@ always @ (posedge clk) begin
 end
 
 endmodule
+
