@@ -7,6 +7,7 @@ module TEST_gate;
 	// Inputs in the module to be tested will be port mapped to register variables
 reg clk;
 reg rst;
+reg pause;
 
 // Outputs in the module to be tested will be port mapped to wire variables
 
@@ -18,7 +19,7 @@ wire[5:0] minutes;
 // Use named portmapping to map inputs to regsiter variables and outputs to
 // wires
 
-Stopwatch UUT (.clk(clk), .rst(rst), .seconds(seconds), .minutes(minutes));
+Stopwatch UUT (.clk(clk), .rst(rst), .pause(pause), .seconds(seconds), .minutes(minutes));
 
 //counter60 UUT (.rst(rst), .clk(clk), .count_value(seconds), .increment_next(incr_minute));
 
@@ -28,9 +29,13 @@ initial
 begin
 	rst = 1;
 	clk = 0;
+	pause = 0;
 		
 	#15 rst = 0;
 	
+	#150000 pause = 1;
+	
+	#550000 pause = 0;
 end
 
 // Use an always block to generate all the test cases
