@@ -33,19 +33,21 @@ initial increment_next = 0;
 
 always @ (posedge clk) begin
 	if(rst) begin
-		count_value <= 0;
-		increment_next <= 0;
+		count_value = 0;
+		increment_next = 0;
 	end
 	else begin
-		count_value <= count_value + 1;
 		
-		if(count_value == cutoff) begin
-			increment_next <= 1;
-			count_value <= 0;
+		if(count_value == cutoff)begin
+			count_value = 0;
+			increment_next = 1;
 		end
 		else begin
-			increment_next <= 0;
+			count_value = count_value + 1;
+			increment_next = 0;
 		end
+		
+
 	end
 
 end
