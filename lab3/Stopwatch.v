@@ -18,10 +18,11 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module Stopwatch(rst, clk, seconds, minutes);
+module Stopwatch(rst, clk, pause, seconds, minutes);
 
 input rst;
 input clk;
+input pause;
 
 output wire[5:0] seconds;
 output wire[5:0] minutes;
@@ -35,11 +36,20 @@ wire clock_fast;
 wire incr_minutes;
 wire incr_hours;
 
+wire clock_valid;
 
 
-clocks clocks0 (.rst(rst), .master_clock(clk), .clock1hz(clock1hz), .clock2hz(clock2hz), .clock_adjust(clock_adjust), .clock_fast(clock_fast));
+// Pause the clocks
+assign clock_valid = ~pause & ~incr_hours;
+
+
+clocks clocks0 (.rst(rst), .master_clock(clk), .in_valid(clock_valid), 
+						.clock1hz(clock1hz), .clock2hz(clock2hz), .clock_adjust(clock_adjust), .clock_fast(clock_fast));
 													//SIMULATION swich back to 1hz
-counter60 counter_seconds (.rst(rst), .clk(clk), .count_value(seconds), .increment_next(incr_minutes));
+counter60 counter_seconds (.rst(rst), .clk(clock_fast), .count_value(seconds), .increment_next(incr_minutes));
 counter60 counter_minutes (.rst(rst), .clk(incr_minutes), .count_value(minutes), .increment_next(incr_hours));
 
+
+
 endmodule
+
