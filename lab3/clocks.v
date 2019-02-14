@@ -18,10 +18,11 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module clocks(rst, master_clock, clock1hz, clock2hz, clock_adjust, clock_fast);
+module clocks(rst, master_clock, in_valid, clock1hz, clock2hz, clock_adjust, clock_fast);
 
 input wire rst;
 input wire master_clock;
+input wire in_valid;
 
 output reg clock1hz;
 output reg clock2hz;
@@ -49,48 +50,52 @@ always @ (posedge master_clock) begin
 		clock2hz <= 0;
 		clock_adjust <= 0;
 		clock_fast <= 0;
+		
 	end
 	else begin
-		// increment counters
-		counter1hz <= counter1hz + 1'b1;
-		counter2hz <= counter2hz + 1'b1;
-		counter_adjust <= counter_adjust + 1'b1;
-		counter_fast <= counter_fast + 1'b1;
+		if(in_valid) begin
+			// increment counters
+			counter1hz <= counter1hz + 1'b1;
+			counter2hz <= counter2hz + 1'b1;
+			counter_adjust <= counter_adjust + 1'b1;
+			counter_fast <= counter_fast + 1'b1;
 
-		//SIMULATION sped up x100
-		if(counter1hz == cutoff1hz/100) begin
-			counter1hz <= 0;
-			if(clock1hz == 0)
-				clock1hz <= 1'b1;
-			else
-				clock1hz <= 1'b0;
-		end
+			//SIMULATION sped up x100
+			if(counter1hz == cutoff1hz/100) begin
+				counter1hz <= 0;
+				if(clock1hz == 0)
+					clock1hz <= 1'b1;
+				else
+					clock1hz <= 1'b0;
+			end
 
-		//SIMULATION sped up x100
-		if(counter2hz == cutoff2hz/100) begin
-			counter2hz <= 0;
-			if(clock2hz == 0)
-				clock2hz <= 1'b1;
-			else
-				clock2hz <= 1'b0;
-		end
+			//SIMULATION sped up x100
+			if(counter2hz == cutoff2hz/100) begin
+				counter2hz <= 0;
+				if(clock2hz == 0)
+					clock2hz <= 1'b1;
+				else
+					clock2hz <= 1'b0;
+			end
 
-		//SIMULATION sped up x100
-		if(counter_adjust == cutoff_adjust/100) begin
-			counter_adjust <= 0;
-			if(clock_adjust == 0)
-				clock_adjust <= 1'b1;
-			else
-				clock_adjust <= 1'b0;
-		end
+			//SIMULATION sped up x100
+			if(counter_adjust == cutoff_adjust/100) begin
+				counter_adjust <= 0;
+				if(clock_adjust == 0)
+					clock_adjust <= 1'b1;
+				else
+					clock_adjust <= 1'b0;
+			end
 
-		//SIMULATION sped up x100
-		if(counter_fast == cutoff_fast/100) begin
-			counter_fast <= 0;
-			if(clock_fast == 0)
-				clock_fast <= 1'b1;
-			else
-				clock_fast <= 1'b0;
+			//SIMULATION sped up x100
+			// == cutoff_fast/100
+			if(counter_fast == 10) begin
+				counter_fast <= 0;
+				if(clock_fast == 0)
+					clock_fast <= 1'b1;
+				else
+					clock_fast <= 1'b0;
+			end
 		end
 	end
 end
