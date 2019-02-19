@@ -49,11 +49,13 @@ assign clock_valid = ~pause & ~done;
 
 
 
-clocks clocks0 (.rst(rst), .master_clock(clk), .in_valid(clock_valid), 
+clocks clocks0 (.rst(rst), .master_clock(clk), 
 						.clock1hz(clock1hz), .clock2hz(clock2hz), .clock_adjust(clock_adjust), .clock_fast(clock_fast));
 													//SIMULATION swich back to 1hz
-counter60 counter_seconds (.rst(rst), .clk(clock_fast), .count_value(sec), .increment_next(incr_minutes));
-counter60 counter_minutes (.rst(rst), .clk(incr_minutes), .count_value(min), .increment_next(incr_hours));
+counter60 counter_seconds (.rst(rst), .clk(clock_fast), 
+										.count_value(sec), .increment_next(incr_minutes));
+counter60 counter_minutes (.rst(rst), .clk(incr_minutes), 
+										.count_value(min), .increment_next(incr_hours));
 
 
 // Detect final pause on 59:59
@@ -72,4 +74,3 @@ always @ (posedge clk) begin
 end
 
 endmodule
-
