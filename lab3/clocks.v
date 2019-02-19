@@ -18,11 +18,10 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module clocks(rst, master_clock, in_valid, clock1hz, clock2hz, clock_adjust, clock_fast);
+module clocks(rst, master_clock, clock1hz, clock2hz, clock_adjust, clock_fast);
 
 input wire rst;
 input wire master_clock;
-input wire in_valid;
 
 output reg clock1hz;
 output reg clock2hz;
@@ -36,8 +35,8 @@ reg[27:0] counter_fast;
 
 parameter cutoff1hz = 50000000;
 parameter cutoff2hz = 25000000;
-parameter cutoff_adjust = 40000000;
-parameter cutoff_fast = 500000;
+parameter cutoff_adjust = 40000000; //1.25Hz
+parameter cutoff_fast = 500000; //100Hz
 
 
 always @ (posedge master_clock) begin
@@ -53,7 +52,6 @@ always @ (posedge master_clock) begin
 		
 	end
 	else begin
-		if(in_valid) begin
 			// increment counters
 			counter1hz <= counter1hz + 1'b1;
 			counter2hz <= counter2hz + 1'b1;
@@ -61,7 +59,8 @@ always @ (posedge master_clock) begin
 			counter_fast <= counter_fast + 1'b1;
 
 			//SIMULATION sped up x100
-			if(counter1hz == cutoff1hz/100) begin
+			//== cutoff1hz/100
+			if(counter1hz == 10) begin
 				counter1hz <= 0;
 				if(clock1hz == 0)
 					clock1hz <= 1'b1;
@@ -70,7 +69,8 @@ always @ (posedge master_clock) begin
 			end
 
 			//SIMULATION sped up x100
-			if(counter2hz == cutoff2hz/100) begin
+			//== cutoff2hz/100
+			if(counter2hz == 5) begin
 				counter2hz <= 0;
 				if(clock2hz == 0)
 					clock2hz <= 1'b1;
@@ -79,7 +79,8 @@ always @ (posedge master_clock) begin
 			end
 
 			//SIMULATION sped up x100
-			if(counter_adjust == cutoff_adjust/100) begin
+			//== cutoff_adjust/100
+			if(counter_adjust == 7) begin
 				counter_adjust <= 0;
 				if(clock_adjust == 0)
 					clock_adjust <= 1'b1;
@@ -89,16 +90,16 @@ always @ (posedge master_clock) begin
 
 			//SIMULATION sped up x100
 			// == cutoff_fast/100
-			if(counter_fast == 10) begin
+			if(counter_fast == 1) begin
 				counter_fast <= 0;
 				if(clock_fast == 0)
 					clock_fast <= 1'b1;
 				else
 					clock_fast <= 1'b0;
 			end
-		end
 	end
 end
 
 endmodule
+
 
