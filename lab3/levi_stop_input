@@ -1,0 +1,189 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date:    21:33:18 02/12/2019 
+// Design Name: 
+// Module Name:    Stopwatch 
+// Project Name: 
+// Target Devices: 
+// Tool versions: 
+// Description: 
+//
+// Dependencies: 
+//
+// Revision: 
+// Revision 0.01 - File Created
+// Additional Comments: 
+//
+//////////////////////////////////////////////////////////////////////////////////
+module Stopwatch(rst, clk, btnR, btnP, sw, led, 
+						digit1, digit2, digit3, digit4, seg, an, clock1hz, clock2hz, clock_adjust_blink, clock_fast);
+
+
+// system
+input rst;
+input clk;
+
+// button inputs
+input btnR;
+input btnP;
+input [1:0] sw;
+output [5:0] led;
+
+// modes
+wire regular_mode; 
+wire adj_seconds_mode; 
+wire adj_minutes_mode; 
+wire pause_mode;
+wire reset_mode;
+
+// digits
+output wire[3:0] digit1; 
+output wire[3:0] digit2; 
+output wire[3:0] digit3; 
+output wire[3:0] digit4;
+
+// display
+output [7:0] seg;
+output [3:0] an;
+
+// clocks
+output wire clock1hz;
+output wire clock2hz;
+output wire clock_adjust_blink;
+output wire clock_fast;
+
+
+// Initialize hardcoded values for board testing??
+reg tmp_regular_mode = 1; 
+reg tmp_adjust_seconds_mode = 0; 
+reg tmp_adjust_minutes_mode = 0; 
+reg tmp_pause_mode = 0;
+
+assign led[0] = pause_mode;
+assign led[1] = reset_mode;
+assign led[2] = adj_seconds_mode;
+assign led[3] = adj_minutes_mode;
+assign led[4] = digit4[2];
+
+assign regular_mode = ~pause_mode && ~adj_seconds_mode && ~adj_minutes_mode && ~reset_mode;
+
+
+
+InputHandle InputHandle (.clk(clk), .btnR(btnR), .btnP(btnP), .sw(sw), .pause_mode(pause_mode), .reset_mode(reset_mode), .adj_seconds_mode(adj_seconds_mode), .adj_minutes_mode(adj_minutes_mode));
+
+clocks clocks0 (.rst(rst), .master_clock(clk), 
+						.clock1hz(clock1hz), .clock2hz(clock2hz), .clock_adjust(clock_adjust_blink), .clock_fast(clock_fast));
+
+totalCounter counter0 (.rst(rst), .counting_clock(clock1hz), .adjust_clock(clock2hz), 
+								.regular_mode(regular_mode), .adjust_seconds_mode(adj_seconds_mode), .adjust_minutes_mode(adj_minutes_mode), .pause_mode(pause_mode),
+								.digit1(digit1), .digit2(digit2), .digit3(digit3), .digit4(digit4));
+
+display display0(
+  // Inputs
+  .clk_fast(clock_fast), .clk_adjust(clock_adjust_blink),
+  .reg_mode(regular_mode), .adj_sec_mode(adj_seconds_mode), .adj_min_mode(adj_minutes_mode), .pause_mode(pause_mode),
+  .digit_1(digit1), .digit_2(digit2), .digit_3(digit3), .digit_4(digit4),
+  // Outputs
+  .seg(seg), .an(an)
+);
+
+
+endmodule
+
+module InputHandle(clk, btnR, btnP, sw, pause_mode, reset_mode, adj_seconds_mode, adj_minutes_mode);
+
+input clk;
+input btnR;
+input btnP;
+input [1:0] sw;
+
+reg adj_vld;
+output reg pause_mode;
+output reg reset_mode;
+output reg adj_seconds_mode;
+output reg adj_minutes_mode;
+
+initial pause_mode = 0;
+initial reset_mode = 0;
+initial adj_vld = 0;
+initial adj_seconds_mode = 0;
+initial adj_minutes_mode = 0;
+
+wire [17:0] clk_dv_inc;
+
+reg [16:0]  clk_dv;
+reg         clk_en;
+reg         clk_en_d;
+
+reg [2:0]   step_r;
+reg [2:0]   step_p;
+
+initial clk_dv = 0;
+initial clk_en = 0;
+initial clk_en_d = 0;
+initial step_r[2:0] = 0;
+initial step_p[2:0] = 0;
+
+// ===========================================================================
+// timing signal for clock enable
+// ===========================================================================
+
+assign clk_dv_inc = clk_dv + 1;
+   
+always @ (posedge clk)
+    begin
+       clk_dv   <= clk_dv_inc[16:0];
+       clk_en   <= clk_dv_inc[17];
+       clk_en_d <= clk_en;
+    end
+	 
+// ===========================================================================
+// Instruction Stepping Control / Debouncing
+// ===========================================================================
+
+   
+  wire is_btnR_posedge;
+  wire is_btnP_posedge;
+  assign is_btnR_posedge = ~ step_r[0] & step_r[1];
+  assign is_btnP_posedge = ~ step_p[0] & step_p[1];
+  
+  always @ (posedge clk) begin
+     if (clk_en) begin // Down sampling
+       step_r[2:0]  <= {btnR, step_r[2:1]};
+       step_p[2:0]  <= {btnP, step_p[2:1]};
+     end
+   end
+
+   always @ (posedge clk)
+     if (clk_en_d) begin
+		if (is_btnR_posedge)
+			reset_mode <= 1'b1;
+		else
+			reset_mode <= 1'b0;
+	   if (is_btnP_posedge && !adj_vld)
+			pause_mode <= ~pause_mode;
+		end else begin
+			reset_mode <= 0;
+		end
+
+   always @ (posedge clk)
+     begin
+		 adj_vld <= sw[1];
+		 if (adj_vld && sw[0]) begin
+			adj_minutes_mode <= 1'b0;
+			adj_seconds_mode <= 1'b1;
+		 end
+		 else if (adj_vld && !sw[0]) begin
+			adj_seconds_mode <= 1'b0;
+			adj_minutes_mode <= 1'b1;
+		 end
+		 if (!adj_vld && adj_seconds_mode)
+			adj_seconds_mode <= 1'b0;
+		 else if (!adj_vld && adj_minutes_mode)
+			adj_minutes_mode <= 1'b0;
+	  end
+	  
+endmodule
