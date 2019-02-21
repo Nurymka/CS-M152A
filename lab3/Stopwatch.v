@@ -18,59 +18,62 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module Stopwatch(rst, clk, pause, seconds, minutes);
+module Stopwatch(rst, clk, regular_mode, adjust_seconds_mode, adjust_minutes_mode, pause_mode, 
+						digit1, digit2, digit3, digit4, seg, an, blink);
 
+
+// system
 input rst;
 input clk;
-input pause;
 
-// Used to connect the outputs of the counter modules
-wire[5:0] sec;
-wire[5:0] min;
+// modes
+input regular_mode; 
+input adjust_seconds_mode; 
+input adjust_minutes_mode; 
+input pause_mode;
 
-// Used to switch between counter values and final pause value of 59:59
-output reg[5:0] seconds;
-output reg[5:0] minutes;
+// digits
+output wire[3:0] digit1; 
+output wire[3:0] digit2; 
+output wire[3:0] digit3; 
+output wire[3:0] digit4;
 
+// display
+output [7:0] seg;
+output [3:0] an;
+output blink;
+
+// clocks
 wire clock1hz;
 wire clock2hz;
-wire clock_adjust;
+wire clock_adjust_blink;
 wire clock_fast;
 
-wire incr_minutes;
-wire incr_hours;
 
-wire clock_valid;
-reg done = 0;
-
-// Pause the clocks
-assign clock_valid = ~pause & ~done;
+// Initialize hardcoded values for board testing??
+reg tmp_regular_mode = 1; 
+reg tmp_adjust_seconds_mode = 0; 
+reg tmp_adjust_minutes_mode = 0; 
+reg tmp_pause_mode = 0;
 
 
 
 
 clocks clocks0 (.rst(rst), .master_clock(clk), 
-						.clock1hz(clock1hz), .clock2hz(clock2hz), .clock_adjust(clock_adjust), .clock_fast(clock_fast));
-													//SIMULATION swich back to 1hz
-counter60 counter_seconds (.rst(rst), .clk(clock_fast), 
-										.count_value(sec), .increment_next(incr_minutes));
-counter60 counter_minutes (.rst(rst), .clk(incr_minutes), 
-										.count_value(min), .increment_next(incr_hours));
+						.clock1hz(clock1hz), .clock2hz(clock2hz), .clock_adjust(clock_adjust_blink), .clock_fast(clock_fast));
 
+totalCounter counter0 (.rst(rst), .counting_clock(clock1hz), .adjust_clock(clock2hz), 
+								.regular_mode(regular_mode), .adjust_seconds_mode(adjust_seconds_mode), .adjust_minutes_mode(adjust_minutes_mode), .pause_mode(pause_mode),
+								.digit1(digit1), .digit2(digit2), .digit3(digit3), .digit4(digit4));
 
-// Detect final pause on 59:59
-always @ (posedge clk) begin
-	if(!done) begin
-		if(incr_hours) begin
-			done = 1;
-			seconds = 59;
-			minutes = 59;
-		end
-		else begin
-			seconds = sec;
-			minutes = min;
-		end
-	end
-end
+display display0(
+  // Inputs
+  .clk_fast(clock_fast), .clk_adjust(clock_adjust_blink),
+  .reg_mode(regular_mode), .adj_sec_mode(adjust_seconds_mode), .adj_min_mode(adjust_minutes_mode), .pause_mode(pause_mode),
+  .digit_1(digit1), .digit_2(digit2), .digit_3(digit3), .digit_4(digit4),
+  // Outputs
+  .seg(seg), .an(an), .blink(blink)
+);
+
 
 endmodule
