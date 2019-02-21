@@ -35,7 +35,7 @@ reg[27:0] counter_fast;
 
 parameter cutoff1hz = 50000000;
 parameter cutoff2hz = 25000000;
-parameter cutoff_adjust = 40000000; //1.25Hz
+parameter cutoff_adjust = 40000000; //1.25Hz --- !!! change to 8Hz
 parameter cutoff_fast = 500000; //100Hz
 
 
@@ -60,7 +60,7 @@ always @ (posedge master_clock) begin
 
 			//SIMULATION sped up x100
 			//== cutoff1hz/100
-			if(counter1hz == 10) begin
+			if(counter1hz == 100) begin
 				counter1hz <= 0;
 				if(clock1hz == 0)
 					clock1hz <= 1'b1;
@@ -70,7 +70,7 @@ always @ (posedge master_clock) begin
 
 			//SIMULATION sped up x100
 			//== cutoff2hz/100
-			if(counter2hz == 5) begin
+			if(counter2hz == 50) begin
 				counter2hz <= 0;
 				if(clock2hz == 0)
 					clock2hz <= 1'b1;
@@ -80,7 +80,7 @@ always @ (posedge master_clock) begin
 
 			//SIMULATION sped up x100
 			//== cutoff_adjust/100
-			if(counter_adjust == 7) begin
+			if(counter_adjust == 12) begin
 				counter_adjust <= 0;
 				if(clock_adjust == 0)
 					clock_adjust <= 1'b1;
@@ -101,5 +101,4 @@ always @ (posedge master_clock) begin
 end
 
 endmodule
-
 
