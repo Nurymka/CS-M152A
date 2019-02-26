@@ -18,50 +18,47 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module display_tb;
+module display_nexys3(
+  // Inputs
+  master_clk,
+  sw,
+  // Outputs
+  seg,
+  an
+);
 
 // system
-reg master_clk;
-reg rst;
+input [7:0] sw;
+input master_clk;
 
-// digits
-output wire[3:0] digit1; 
-output wire[3:0] digit2; 
-output wire[3:0] digit3; 
-output wire[3:0] digit4;
+wire rst;
 
 // display
-output [7:0] seg;
-output [3:0] an;
+output wire [7:0] seg;
+output wire [3:0] an;
+
+// digits
+reg [3:0] digit_1 = 4; 
+reg [3:0] digit_2 = 6; 
+reg [3:0] digit_3 = 8; 
+reg [3:0] digit_4 = 9;
 
 // clocks
-output wire clk_fast;
-output wire clk_blink;
+wire clk_fast;
+wire clk_blink;
 
-initial
-  begin
-    master_clk = 0;
-    rst = 1;
-    digit1 = 3;
-    digit2 = 5;
-    digit3 = 8;
-    digit4 = 9;
-    #1000 rst = 0;
-    $finish;
-  end
+assign rst = sw[0];
 
-always #5 master_clk = ~master_clk;
-
-clocks clocks0 (.rst(rst), .master_clock(master_clk), .clk_fast(clk_fast), .clk_blink(clk_blink));
+clocks clocks0 (.rst(rst), .master_clk(master_clk), .clk_fast(clk_fast), .clk_blink(clk_blink));
 
 display display0(
   // Inputs
   .clk_fast(clk_fast),
   .clk_blink(clk_blink),
-  .digit_1(digit1),
-  .digit_2(digit2),
-  .digit_3(digit3),
-  .digit_4(digit4),
+  .digit_1(digit_1),
+  .digit_2(digit_2),
+  .digit_3(digit_3),
+  .digit_4(digit_4),
   // Outputs
   .seg(seg), .an(an)
 );

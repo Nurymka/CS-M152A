@@ -25,43 +25,43 @@ reg master_clk;
 reg rst;
 
 // digits
-output wire[3:0] digit1; 
-output wire[3:0] digit2; 
-output wire[3:0] digit3; 
-output wire[3:0] digit4;
+reg [3:0] digit_1; 
+reg [3:0] digit_2; 
+reg [3:0] digit_3; 
+reg [3:0] digit_4;
 
 // display
-output [7:0] seg;
-output [3:0] an;
+wire [7:0] seg;
+wire [3:0] an;
 
 // clocks
-output wire clk_fast;
-output wire clk_blink;
+wire clk_fast;
+wire clk_blink;
 
 initial
   begin
     master_clk = 0;
     rst = 1;
-    digit1 = 3;
-    digit2 = 5;
-    digit3 = 8;
-    digit4 = 9;
+    digit_1 = 3;
+    digit_2 = 5;
+    digit_3 = 8;
+    digit_4 = 9;
     #1000 rst = 0;
     $finish;
   end
 
 always #5 master_clk = ~master_clk;
 
-clocks clocks0 (.rst(rst), .master_clock(master_clk), .clk_fast(clk_fast), .clk_blink(clk_blink));
+clocks clocks0 (.rst(rst), .master_clk(master_clk), .clk_fast(clk_fast), .clk_blink(clk_blink));
 
 display display0(
   // Inputs
   .clk_fast(clk_fast),
   .clk_blink(clk_blink),
-  .digit_1(digit1),
-  .digit_2(digit2),
-  .digit_3(digit3),
-  .digit_4(digit4),
+  .digit_1(digit_1),
+  .digit_2(digit_2),
+  .digit_3(digit_3),
+  .digit_4(digit_4),
   // Outputs
   .seg(seg), .an(an)
 );

@@ -33,72 +33,43 @@ output reg clk_fast;
 output reg clk_blink;
 
 reg[27:0] ctr_fast;
-reg[27:0] ctr_blnk;
+reg[27:0] ctr_blink;
 
 parameter cutoff_fast = 100000;
 parameter cutoff_blink = 40000000;
 
-always @ (posedge master_clock) begin
+always @ (posedge master_clk) begin
 	if (rst) begin
-		counter1hz <= 0;
-		counter2hz <= 0;
-		counter_adjust <= 0;
-		counter_fast <= 0;
-		clock1hz <= 0;
-		clock2hz <= 0;
-		clock_adjust <= 0;
-		clock_fast <= 0;
-		
+		clk_fast <= 0;
+		clk_blink	<= 0;
+		ctr_fast <= 0;
+		ctr_blink <= 0;	
 	end
 	else begin
 			// increment counters
-			counter1hz <= counter1hz + 1'b1;
-			counter2hz <= counter2hz + 1'b1;
-			counter_adjust <= counter_adjust + 1'b1;
-			counter_fast <= counter_fast + 1'b1;
-
-			//SIMULATION sped up x100
-			//== cutoff1hz/100
-			 if(counter1hz == 100) begin
-			//if(counter1hz == cutoff1hz) begin
-				counter1hz <= 0;
-				if(clock1hz == 0)
-					clock1hz <= 1'b1;
-				else
-					clock1hz <= 1'b0;
-			end
-
-			//SIMULATION sped up x100
-			//== cutoff2hz/100
-			if(counter2hz == 50) begin
-			//if(counter2hz == cutoff2hz) begin
-				counter2hz <= 0;
-				if(clock2hz == 0)
-					clock2hz <= 1'b1;
-				else
-					clock2hz <= 1'b0;
-			end
+			ctr_blink <= ctr_blink + 1'b1;
+			ctr_fast <= ctr_fast + 1'b1;
 
 			//SIMULATION sped up x100
 			//== cutoff_adjust/100
-			if(counter_adjust == 12) begin
-			//if(counter_adjust == cutoff_adjust) begin
-				counter_adjust <= 0;
-				if(clock_adjust == 0)
-					clock_adjust <= 1'b1;
+			// if(ctr_blink == 12) begin
+			if(ctr_blink == cutoff_blink) begin
+				ctr_blink <= 0;
+				if(clk_blink == 0)
+					clk_blink <= 1'b1;
 				else
-					clock_adjust <= 1'b0;
+					clk_blink <= 1'b0;
 			end
 
 			//SIMULATION sped up x100
 			// == cutoff_fast/100
-			if(counter_fast == 1) begin
-			//if(counter_fast == cutoff_fast) begin
-				counter_fast <= 0;
-				if(clock_fast == 0)
-					clock_fast <= 1'b1;
+			// if(ctr_fast == 2) begin
+			if(ctr_fast == cutoff_fast) begin
+				ctr_fast <= 0;
+				if(clk_fast == 0)
+					clk_fast <= 1'b1;
 				else
-					clock_fast <= 1'b0;
+					clk_fast <= 1'b0;
 			end
 	end
 end
