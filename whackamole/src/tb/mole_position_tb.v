@@ -50,7 +50,7 @@ module mole_position_tb;
 		#100;
         
 		// Add stimulus here
-		#100;
+		#10050;
 		
 		move_mole = 1;
 		# 10 move_mole = 0;
