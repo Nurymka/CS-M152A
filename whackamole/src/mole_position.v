@@ -22,7 +22,7 @@ module mole_position(
     //inputs
 	 i_clk, i_change_position,
 	 //outputs
-	 o_mole_position
+	 o_mole_position, o_position_changed
 	 );
 
 // signals
@@ -44,6 +44,7 @@ reg [4:0] rand_next_;
 
 // mole position 0-4
 output reg[2:0] o_mole_position = 5;
+output o_position_changed = 0;
 
 
 always @ (posedge i_clk) begin
@@ -66,6 +67,12 @@ always @ (posedge i_clk) begin
 		// change mole position with a new random position
 		o_mole_position = rand_ % 5;
 		
+		// signal the mole changed
+		o_position_changed = 1;
+		
+	end
+	else begin
+		o_position_changed = 0;
 	end
 	
 end
