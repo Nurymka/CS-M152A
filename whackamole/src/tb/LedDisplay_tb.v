@@ -32,7 +32,7 @@ module LedDisplay_tb;
 	reg user_wrong;
 	
 	//Outputs
-	wire[7:0] leds = 0;
+	wire[7:0] leds;
 
 	// Instantiate the Unit Under Test (UUT)
 	LedDisplay uut (
