@@ -44,7 +44,7 @@ reg [4:0] rand_next_;
 
 // mole position 0-4
 output reg[2:0] o_mole_position = 5;
-output o_position_changed = 0;
+output reg o_position_changed = 0;
 
 
 always @ (posedge i_clk) begin
