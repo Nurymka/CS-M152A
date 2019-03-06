@@ -24,19 +24,24 @@ module clocks(
   master_clk,
   // Outputs
   clk_fast,
-  clk_blink);
+  clk_blink,
+	clk_pixel);
 
 input wire rst;
 input wire master_clk;
 
 output reg clk_fast;
 output reg clk_blink;
+output wire clk_pixel;
 
 reg[27:0] ctr_fast;
 reg[27:0] ctr_blink;
+reg[27:0] ctr_pixel;
 
 parameter cutoff_fast = 100000;
 parameter cutoff_blink = 40000000;
+
+assign clk_pixel = ctr_pixel[1];
 
 always @ (posedge master_clk) begin
 	if (rst) begin
@@ -44,12 +49,9 @@ always @ (posedge master_clk) begin
 		clk_blink	<= 0;
 		ctr_fast <= 0;
 		ctr_blink <= 0;	
+		ctr_pixel <= 0;
 	end
 	else begin
-			// increment counters
-			ctr_blink <= ctr_blink + 1'b1;
-			ctr_fast <= ctr_fast + 1'b1;
-
 			//SIMULATION sped up x100
 			//== cutoff_adjust/100
 			// if(ctr_blink == 12) begin
@@ -71,6 +73,11 @@ always @ (posedge master_clk) begin
 				else
 					clk_fast <= 1'b0;
 			end
+
+			// increment counters
+			ctr_blink <= ctr_blink + 1'b1;
+			ctr_fast <= ctr_fast + 1'b1;
+			ctr_pixel <= ctr_pixel + 1'b1;
 	end
 end
 
