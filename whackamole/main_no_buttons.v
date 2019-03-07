@@ -20,16 +20,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 module main_no_buttons(
 	// input
-	clk, user_guess, eval_now, 
+	clk, user_guess, restart_game, eval_now, 
 	// output
-   mole_pos, mole_change, guess_correct, guess_wrong, guess_now, led);
+   mole_pos, mole_change, guess_correct, guess_wrong, guess_now, score, led, seconds, game_over);
 
 input clk;
 input[2:0] user_guess;
+input restart_game;
 input eval_now;
-
-
-
 
 
 wire rst;
@@ -40,13 +38,50 @@ output wire mole_change;
 output wire guess_now;
 output wire [7:0] score;
 output [7:0] led;
+output [4:0] seconds;
+output wire game_over;
 
 
-mole_position mole_position(.i_clk(clk), .i_change_position(guess_correct), .o_mole_position(mole_pos), .o_position_changed(mole_change));
+//TODO: stop everything on game_over
+//TODO: simulation to check game_over works
+//TODO: simulation to check restart_game works
+//TODO: clean up project files into proper folder
+//TODO: upload to github
 
-score_evaluation score_evaluation(.clk(clk), .user_guess(user_guess), .mole_pos(mole_pos), .eval_now(eval_now), .rst(rst), .mole_change(mole_change), .score(score), 
-								.guess_correct(guess_correct), .guess_wrong(guess_wrong), .guess_now(guess_now));
+mole_position mole_position(
+		.i_clk(clk), 
+		.i_change_position(guess_correct), 
+		.o_mole_position(mole_pos), 
+		.o_position_changed(mole_change)
+	);
+
+score_evaluation score_evaluation(
+		.clk(clk), 
+		.user_guess(user_guess), 
+		.mole_pos(mole_pos), 
+		.eval_now(eval_now), 
+		.rst(rst), 
+		.mole_change(mole_change), 
+		.score(score), 
+		.guess_correct(guess_correct), 
+		.guess_wrong(guess_wrong), 
+		.guess_now(guess_now)
+	);
+
+countdown_timer countdown (
+		.clk(clk), 
+		.restart_game(restart_game), 
+		.seconds(seconds), 
+		.game_over(game_over)
+	);
 								
-led_display led_display (.i_clk(clk), .i_user_guess(user_guess), .i_mole_position(mole_pos), .i_user_right(guess_correct), .i_user_wrong(guess_wrong), .leds(led));
+led_display led_display (
+		.i_clk(clk), 
+		.i_user_guess(user_guess), 
+		.i_mole_position(mole_pos), 
+		.i_user_right(guess_correct), 
+		.i_user_wrong(guess_wrong), 
+		.leds(led)
+	);
 
 endmodule

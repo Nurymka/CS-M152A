@@ -29,16 +29,68 @@ input rst;
 input mole_change;
 
 // Outputs
-output reg [7:0] score;
-output reg guess_correct;
-output reg guess_now;
-output reg guess_wrong;
+output reg [7:0] score = 0;
+output reg guess_correct = 0;
+output reg guess_wrong = 0;
+output reg guess_now = 1;
 
-initial score = 0;
-initial guess_correct = 0;
-initial guess_wrong = 0;
-initial guess_now = 1;
+// Internal
+reg[27:0] block_counter = 0;
+reg blocked_state = 0;
+////////////////////////////////////
+////////////////////////////////////
+parameter block_cutoff = 10000; // SIMULATAION, change back to 100,000,000
+/////////////////////////////////////
+///////////////////////////////////
 
+
+always @ (posedge clk) begin
+	if(rst) begin
+		score = 0;
+		guess_correct = 0;
+		guess_wrong = 0;
+		guess_now = 1;
+		block_counter = 0;
+		blocked_state = 0;
+	end
+	else if(blocked_state) begin
+		if(block_counter < block_cutoff) begin
+			block_counter = block_counter + 1;
+			guess_wrong = 0;
+		end
+		else begin
+			blocked_state = 0;
+			guess_now = 1;
+		end
+	end
+	else if(eval_now && !blocked_state) begin
+		if(user_guess == mole_pos) begin
+			guess_correct = 1;
+			guess_wrong = 0;
+			score = score + 1;
+		end
+		else begin
+			guess_correct = 0;
+			guess_wrong = 1;
+			guess_now = 0;
+			blocked_state = 1;
+			block_counter = 0;
+		end
+	end
+	else begin
+		guess_correct = 0;
+		guess_wrong = 0;
+	end
+end
+
+
+
+
+
+
+
+
+/*
 always @ (posedge clk) begin
 	if (mole_change)
 		guess_wrong = 0;
@@ -62,5 +114,6 @@ always @ (posedge clk) begin
 		guess_correct =0;
 	end
 end
+*/
 
 endmodule
