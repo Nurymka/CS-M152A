@@ -18,7 +18,7 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module score_evaluation(clk, user_guess, mole_pos, eval_now, rst, mole_change, score, guess_correct, guess_now);
+module score_evaluation(clk, user_guess, mole_pos, eval_now, rst, mole_change, score, guess_correct, guess_wrong, guess_now);
 
 //Inputs
 input clk;
@@ -32,11 +32,11 @@ input mole_change;
 output reg [7:0] score;
 output reg guess_correct;
 output reg guess_now;
-
-reg guess_wrong;
+output reg guess_wrong;
 
 initial score = 0;
 initial guess_correct = 0;
+initial guess_wrong = 0;
 initial guess_now = 1;
 
 always @ (posedge clk) begin
