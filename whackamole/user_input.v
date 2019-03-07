@@ -91,7 +91,7 @@ always @ (posedge clk)
   assign is_btnC_posedge = ~ step_C[0] & step_C[1];
 
   always @ (posedge clk) begin
-     if (clk) begin // Down sampling // clk_en
+     if (clk_en) begin // Down sampling // clk_en
        step_U[2:0]  <= {btnUp, step_U[2:1]};
        step_D[2:0]  <= {btnDown, step_D[2:1]};
 		 step_L[2:0]  <= {btnLeft, step_L[2:1]};
@@ -106,7 +106,7 @@ always @ (posedge clk)
 	  else
 		rst <= 0;
 		
-     if (clk) begin // clk_en_d
+     if (clk_en_d) begin // clk_en_d
 		if (guess_now) begin
 			if (is_btnU_posedge) begin
 				eval_now <= 1;
