@@ -37,6 +37,7 @@ output wire guess_correct;
 output wire guess_wrong;
 output wire [2:0] mole_pos;
 output wire mole_change;
+output wire guess_now;
 output wire [7:0] score;
 output [7:0] led;
 

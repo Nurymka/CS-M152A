@@ -50,7 +50,10 @@
       <association xil_pn:name="PostRouteSimulation" xil_pn:seqID="34"/>
       <association xil_pn:name="PostTranslateSimulation" xil_pn:seqID="34"/>
     </file>
-    <file xil_pn:name="main_no_buttons.v" xil_pn:type="FILE_VERILOG"/>
+    <file xil_pn:name="main_no_buttons.v" xil_pn:type="FILE_VERILOG">
+      <association xil_pn:name="BehavioralSimulation" xil_pn:seqID="41"/>
+      <association xil_pn:name="Implementation" xil_pn:seqID="41"/>
+    </file>
   </files>
 
   <properties>
