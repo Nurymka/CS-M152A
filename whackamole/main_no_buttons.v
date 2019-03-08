@@ -18,33 +18,28 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module main(clk, btnUp, btnDown, btnLeft, btnRight, btnCenter, sw, led);
+module main_no_buttons(
+	// input
+	clk, user_guess, eval_now, 
+	// output
+   mole_pos, mole_change, guess_correct, guess_wrong, guess_now, led);
 
 input clk;
-input btnUp;
-input btnDown;
-input btnLeft;
-input btnRight;
-input btnCenter;
-input sw;
+input[2:0] user_guess;
+input eval_now;
 
 
 
 
+
+wire rst;
+output wire guess_correct;
+output wire guess_wrong;
+output wire [2:0] mole_pos;
+output wire mole_change;
+output wire [7:0] score;
 output [7:0] led;
 
-wire guess_now;
-wire [2:0] user_guess;
-wire rst;
-wire eval_now;
-wire guess_correct;
-wire guess_wrong;
-wire [2:0] mole_pos;
-wire mole_change;
-wire [7:0] score;
-
-user_input user_input(.clk(clk), .btnUp(btnUp), .btnDown(btnDown), .btnLeft(btnLeft), .btnRight(btnRight), .btnCenter(btnCenter), .sw(sw), .guess_now(guess_now), 
-								.user_guess(user_guess), .rst(rst), .eval_now(eval_now));
 
 mole_position mole_position(.i_clk(clk), .i_change_position(guess_correct), .o_mole_position(mole_pos), .o_position_changed(mole_change));
 

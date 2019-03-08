@@ -41,25 +41,25 @@ initial guess_now = 1;
 
 always @ (posedge clk) begin
 	if (mole_change)
-		guess_wrong <= 0;
+		guess_wrong = 0;
 	if (rst) begin
-		score <= 0;
-		guess_correct <= 0;
-		guess_now <= 0;
+		score = 0;
+		guess_correct = 0;
+		guess_now = 0;
 	end else if (eval_now) begin
-		guess_now <= 0;
+		guess_now = 0;
 		if (mole_pos == user_guess) begin
-			guess_correct <= 1;
-			guess_now <= 1;
-			score <= score + 1;
+			guess_correct = 1;
+			guess_now = 1;
+			score = score + 1;
 		end else
-			guess_wrong <= 1;
+			guess_wrong = 1;
 	end else if (guess_wrong && !mole_change) begin
-		guess_now <= 0;
-		guess_correct <= 0;
+		guess_now = 0;
+		guess_correct = 0;
 	end else begin
-		guess_now <= 1;
-		guess_correct <=0;
+		guess_now = 1;
+		guess_correct =0;
 	end
 end
 
