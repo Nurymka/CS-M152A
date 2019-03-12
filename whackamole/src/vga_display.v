@@ -121,15 +121,53 @@ begin
 	end
 end
 
+
+reg [27:0] blink_counter = 0;
+parameter cutoff_blink_wrong = 100000000;
+parameter cutoff_blink_correct = 10000000;
+
 //TODO: guess correct/wrong detection
 always @(posedge clk) begin
+	if(rst) begin
+		correct_on = 0;
+		wrong_on = 0;
+		blink_counter = 0;
+	end
+	else if (guess_correct) begin
+		blink_counter = 0;
+		correct_on = 1;
+		wrong_on = 0;
+	end
+	else if (guess_wrong) begin
+		blink_counter = 0;
+		correct_on = 0;
+		wrong_on = 1;
+	end
+	else begin
+		if(correct_on && blink_counter == cutoff_blink_correct) begin
+			correct_on = 0;
+			wrong_on = 0;
+		end
+		else if(wrong_on && blink_counter == cutoff_blink_wrong) begin
+			correct_on = 0;
+			wrong_on = 0;
+		end
+		else begin
+			blink_counter = blink_counter + 1;
+		end
+	end
+end
+	
+
+/*
+
     if(guess_correct) begin
         detect_correct = 1;
         detect_wrong = 0;
     end
     else if(guess_wrong) begin
         detect_wrong = 1;
-        detect_wrong = 0;
+        detect_correct = 0;
     end
     else begin
         if(correct_on) begin
@@ -143,7 +181,8 @@ always @(posedge clk) begin
         end
     end
 end
-
+*/
+/*
 // Replaced guess_correct with detect_correct
 always @(posedge clk_blink or posedge rst)
 begin
@@ -167,7 +206,7 @@ begin
 		else ;
 	end
 end
-
+*/
 // generate sync pulses (active low)
 // ----------------
 // "assign" statements are a quick way to
