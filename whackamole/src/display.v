@@ -30,10 +30,10 @@ end
 
 always @ (posedge clk_fast) begin
   case (cur_digit)
-    2'b00: begin an_ <= 4'b0111; cur_num = digit_1; end 
-    2'b01: begin an_ <= 4'b1011; cur_num = digit_2; end
-    2'b10: begin an_ <= 4'b1101; cur_num = digit_3; end
-    2'b11: begin an_ <= 4'b1110; cur_num = digit_4; end
+    2'b00: begin an_ = 4'b0111; cur_num = digit_1; end 
+    2'b01: begin an_ = 4'b1011; cur_num = digit_2; end
+    2'b10: begin an_ = 4'b1101; cur_num = digit_3; end
+    2'b11: begin an_ = 4'b1110; cur_num = digit_4; end
   endcase
 
   if (cur_digit == 2'b11)
@@ -54,10 +54,7 @@ always @ (posedge clk_fast) begin
     9: seg_ = 8'b10010000;
   endcase
 
-  if (clk_blink && !isOn && (cur_num == digit_3 || cur_num == digit_4)) begin
-    seg_ = 8'b1111_1111;
-  end else;
-  if (clk_blink && !isOn && (cur_num == digit_1 || cur_num == digit_2)) begin
+  if (clk_blink && !isOn) begin
     seg_ = 8'b1111_1111;
   end else;
 end

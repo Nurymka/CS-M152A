@@ -45,39 +45,37 @@ assign clk_pixel = ctr_pixel[1];
 
 always @ (posedge master_clk) begin
 	if (rst) begin
-		clk_fast <= 0;
-		clk_blink	<= 0;
-		ctr_fast <= 0;
-		ctr_blink <= 0;	
-		ctr_pixel <= 0;
+		ctr_fast = 0;
+		ctr_blink = 0;	
+		ctr_pixel = 0;
 	end
 	else begin
 			//SIMULATION sped up x100
-			//== cutoff_adjust/100
+			// == cutoff_adjust/100
 			// if(ctr_blink == 12) begin
 			if(ctr_blink == cutoff_blink) begin
-				ctr_blink <= 0;
+				ctr_blink = 0;
 				if(clk_blink == 0)
-					clk_blink <= 1'b1;
+					clk_blink = 1'b1;
 				else
-					clk_blink <= 1'b0;
+					clk_blink = 1'b0;
 			end
 
 			//SIMULATION sped up x100
 			// == cutoff_fast/100
 			// if(ctr_fast == 2) begin
 			if(ctr_fast == cutoff_fast) begin
-				ctr_fast <= 0;
+				ctr_fast = 0;
 				if(clk_fast == 0)
-					clk_fast <= 1'b1;
+					clk_fast = 1'b1;
 				else
-					clk_fast <= 1'b0;
+					clk_fast = 1'b0;
 			end
 
 			// increment counters
-			ctr_blink <= ctr_blink + 1'b1;
-			ctr_fast <= ctr_fast + 1'b1;
-			ctr_pixel <= ctr_pixel + 1'b1;
+			ctr_blink = ctr_blink + 1'b1;
+			ctr_fast = ctr_fast + 1'b1;
+			ctr_pixel = ctr_pixel + 1'b1;
 	end
 end
 
