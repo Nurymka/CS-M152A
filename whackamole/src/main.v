@@ -46,6 +46,8 @@ wire [2:0] mole_pos;
 wire mole_change;
 wire [7:0] score;
 wire game_over;
+wire [4:0] seconds;
+//TODO: change seg display to show seconds countdown
 
 wire [3:0] digit_4;
 wire [3:0] digit_3;
@@ -54,7 +56,7 @@ wire [3:0] digit_1;
 
 
 
-
+//TODO: change seg display to show seconds countdown
 assign digit_4 = score % 10;
 assign digit_3 = (score / 10) % 10;
 assign digit_2 = (score / 100) % 10;
@@ -74,6 +76,15 @@ user_input user_input(
 		.eval_now(eval_now)
 	);
 
+
+countdown_timer countdown (
+		.clk(clk), 
+		.i_restart_game(restart_game), 
+		.seconds(seconds), 
+		.game_over(game_over)
+	);
+	
+	
 mole_position mole_position(
 		.i_clk(clk), 
 		.i_restart_game(restart_game),

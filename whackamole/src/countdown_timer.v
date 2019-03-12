@@ -28,7 +28,7 @@ module countdown_timer(
 input clk;
 input i_restart_game;
 
-output reg[4:0] seconds = 30;
+output reg[4:0] seconds = 29;
 output reg game_over = 0;
 
 reg[27:0] counter_second = 0;

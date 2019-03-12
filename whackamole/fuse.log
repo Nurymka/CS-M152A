@@ -1,0 +1,33 @@
+Running: /opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/unwrapped/fuse -intstyle ise -incremental -lib unisims_ver -lib unimacro_ver -lib xilinxcorelib_ver -lib secureip -o /home/ise/XilinxVM/csm152a/whackamole/TEST_gate_isim_beh.exe -prj /home/ise/XilinxVM/csm152a/whackamole/TEST_gate_beh.prj work.TEST_gate work.glbl 
+ISim P.20160913 (signature 0xfbc00daa)
+Number of CPUs detected in this system: 1
+Turning on mult-threading, number of parallel sub-compilation jobs: 0 
+Determining compilation order of HDL files
+Analyzing Verilog file "/home/ise/XilinxVM/csm152a/whackamole/src/user_input.v" into library work
+Analyzing Verilog file "/home/ise/XilinxVM/csm152a/whackamole/src/seven_display.v" into library work
+Analyzing Verilog file "/home/ise/XilinxVM/csm152a/whackamole/src/score_evaluation.v" into library work
+Analyzing Verilog file "/home/ise/XilinxVM/csm152a/whackamole/src/mole_position.v" into library work
+Analyzing Verilog file "/home/ise/XilinxVM/csm152a/whackamole/src/led_display.v" into library work
+Analyzing Verilog file "/home/ise/XilinxVM/csm152a/whackamole/src/countdown_timer.v" into library work
+Analyzing Verilog file "/home/ise/XilinxVM/csm152a/whackamole/src/main.v" into library work
+Analyzing Verilog file "/home/ise/XilinxVM/csm152a/whackamole/src/tb/testbench.v" into library work
+Analyzing Verilog file "/opt/Xilinx/14.7/ISE_DS/ISE//verilog/src/glbl.v" into library work
+Starting static elaboration
+Completed static elaboration
+Fuse Memory Usage: 95076 KB
+Fuse CPU Usage: 2790 ms
+Compiling module user_input
+Compiling module countdown_timer
+Compiling module mole_position
+Compiling module score_evaluation
+Compiling module led_display_default
+Compiling module seven_display
+Compiling module main
+Compiling module TEST_gate
+Compiling module glbl
+Time Resolution for simulation is 1ps.
+Compiled 9 Verilog Units
+Built simulation executable /home/ise/XilinxVM/csm152a/whackamole/TEST_gate_isim_beh.exe
+Fuse Memory Usage: 98320 KB
+Fuse CPU Usage: 3020 ms
+GCC CPU Usage: 1340 ms
