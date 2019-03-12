@@ -68,9 +68,9 @@ assign clk_dv_inc = clk_dv + 1;
    
 always @ (posedge clk)
     begin
-       clk_dv   <= clk_dv_inc[16:0];
-       clk_en   <= clk_dv_inc[17];
-       clk_en_d <= clk_en;
+       clk_dv   = clk_dv_inc[16:0];
+       clk_en   = clk_dv_inc[17];
+       clk_en_d = clk_en;
     end
 	 
 // ===========================================================================
@@ -91,41 +91,46 @@ always @ (posedge clk)
 
   always @ (posedge clk) begin
      if (clk_en) begin // Down sampling // clk_en
-       step_U[2:0]  <= {btnUp, step_U[2:1]};
-       step_D[2:0]  <= {btnDown, step_D[2:1]};
-		 step_L[2:0]  <= {btnLeft, step_L[2:1]};
-       step_R[2:0]  <= {btnRight, step_R[2:1]};
-		 step_C[2:0]  <= {btnCenter, step_C[2:1]};
+       step_U[2:0]  = {btnUp, step_U[2:1]};
+       step_D[2:0]  = {btnDown, step_D[2:1]};
+		 step_L[2:0]  = {btnLeft, step_L[2:1]};
+       step_R[2:0]  = {btnRight, step_R[2:1]};
+		 step_C[2:0]  = {btnCenter, step_C[2:1]};
      end
    end
 	
   always @ (posedge clk) begin
 	  if (sw)
-		rst <= 1;
+		rst = 1;
 	  else
-		rst <= 0;
+		rst = 0;
 		
      if (clk_en_d) begin // clk_en_d
 			if (is_btnU_posedge) begin
-				eval_now <= 1;
-				user_guess <= 0;
+				eval_now = 1;
+				user_guess = 0;
 			end else if (is_btnL_posedge) begin
-				eval_now <= 1;
-				user_guess <= 1;
+				eval_now = 1;
+				user_guess = 1;
 			end else if (is_btnC_posedge) begin
-				eval_now <= 1;
-				user_guess <= 2;
+				eval_now = 1;
+				user_guess = 2;
 			end else if (is_btnR_posedge) begin
-				eval_now <= 1;
-				user_guess <= 3;
+				eval_now = 1;
+				user_guess = 3;
 			end else if (is_btnD_posedge) begin
-				eval_now <= 1;
-				user_guess <= 4;
-			end else begin
-				eval_now <= 0;
-				user_guess <= 5;
+				eval_now = 1;
+				user_guess = 4;
+			end 
+            else begin
+				eval_now = 0;
 			end
+            
 	  end
+      else begin
+        eval_now = 0;
+      end
+      
 	end
 
 endmodule

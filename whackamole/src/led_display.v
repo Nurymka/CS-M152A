@@ -109,22 +109,28 @@ always @(posedge i_clk) begin
 			if(animation_counter < animation_cutoff) begin
 				if(animation_counter < correct_cutoff_1) begin //flash on
 					leds[7:6] = 2'b11;
+                    //leds = 8'b11111111;
 				end
 				else if(animation_counter < correct_cutoff_2) begin //flash off
 					leds[7:6] = 2'b00;
+                    //leds = 8'b00000000;
 				end
 				else if(animation_counter < correct_cutoff_3) begin //flash on
 					leds[7:6] = 2'b11;
+                    //leds = 8'b11111111;
 				end
 				else if(animation_counter < correct_cutoff_4) begin //flash off
 					leds[7:6] = 2'b00;
+                    //leds = 8'b00000000;
 				end
 				else begin //flash on
 					leds[7:6] = 2'b11;
+                    //leds = 8'b11111111;
 				end
 			end
 			else begin
 				leds[7:6] = 2'b00;
+                //leds = 8'b00000000;
 			end
 		end
 		// solid animation

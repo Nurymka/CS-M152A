@@ -55,12 +55,17 @@ wire [3:0] digit_2;
 wire [3:0] digit_1;
 
 
-
+/*
 //TODO: change seg display to show seconds countdown
 assign digit_4 = score % 10;
 assign digit_3 = (score / 10) % 10;
 assign digit_2 = (score / 100) % 10;
 assign digit_1 = (score / 1000) % 10;
+*/
+assign digit_4 = seconds % 10;
+assign digit_3 = (seconds / 10) % 10;
+assign digit_2 = 0;
+assign digit_1 = 0;
 
 
 user_input user_input(
@@ -72,7 +77,7 @@ user_input user_input(
 		.btnCenter(btnCenter), 
 		.sw(sw),  
 		.user_guess(user_guess), 
-		.rst(rst), 
+		.rst(restart_game), 
 		.eval_now(eval_now)
 	);
 

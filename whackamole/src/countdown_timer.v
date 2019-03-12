@@ -28,21 +28,21 @@ module countdown_timer(
 input clk;
 input i_restart_game;
 
-output reg[4:0] seconds = 29;
+output reg[4:0] seconds = 30;
 output reg game_over = 0;
 
 reg[27:0] counter_second = 0;
 
 ////////////////////////////////
 ////////////////////////////////
-parameter cutoff_second = 10000; //SIMULATION, change back to 100,000,000
+parameter cutoff_second = 100000000; //SIMULATION, change back to 100,000,000
 ////////////////////////////////
 
 
 
 always @ (posedge clk) begin
 	if(i_restart_game) begin
-		seconds = 29;
+		seconds = 30;
 		counter_second = 0;
 		game_over = 0;
 	end
