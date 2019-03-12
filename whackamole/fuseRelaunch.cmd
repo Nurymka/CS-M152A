@@ -1,1 +1,1 @@
--intstyle "ise" -incremental -lib "unisims_ver" -lib "unimacro_ver" -lib "xilinxcorelib_ver" -lib "secureip" -o "/home/ise/XilinxVM/csm152a/whackamole/main_no_buttons_tb_isim_beh.exe" -prj "/home/ise/XilinxVM/csm152a/whackamole/main_no_buttons_tb_beh.prj" "work.main_no_buttons_tb" "work.glbl" 
+-intstyle "ise" -incremental -lib "unisims_ver" -lib "unimacro_ver" -lib "xilinxcorelib_ver" -lib "secureip" -o "/home/ise/XilinxVM/csm152a/whackamole/TEST_gate_isim_beh.exe" -prj "/home/ise/XilinxVM/csm152a/whackamole/TEST_gate_beh.prj" "work.TEST_gate" "work.glbl" 

@@ -42,13 +42,10 @@ output [4:0] seconds;
 output wire game_over;
 
 
-
-//TODO: simulation to check game_over works
-//TODO: simulation to check restart_game works
-//TODO: clean up project files into proper folder
-//TODO: upload to github
-
+//TODO: add user_input module
+//TODO: convert score to four digits for seg display
 //TODO: make sure user_input module sends eval_now signal for only 1 or 2 clock cycles
+
 
 mole_position mole_position(
 		.i_clk(clk), 

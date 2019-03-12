@@ -12,14 +12,31 @@ reg btnRight;
 reg btnLeft;
 reg btnCenter;
 reg sw;
+
+// Outputs
 wire [7:0] led;
+wire[7:0] seg;
+wire[3:0] an;
 
 // Instantiation of the design module to be verified by the testbench
 // Use named portmapping to map inputs to regsiter variables and outputs to
 // wires
 
-main UUT (.clk(clk), .btnUp(btnUp), .btnDown(btnDown), .btnLeft(btnLeft), .btnRight(btnRight), .btnCenter(btnCenter), 
-			.sw(sw), .led(led));
+main UUT (
+		.clk(clk), 
+		.btnUp(btnUp), 
+		.btnDown(btnDown), 
+		.btnLeft(btnLeft), 
+		.btnRight(btnRight), 
+		.btnCenter(btnCenter), 
+		.sw(sw), 
+		.led(led),
+		.seg(seg),
+		.an(an)
+		);
+
+
+//TODO: test cases to test button inputs
 
 
 // IMPORTANT: Initialize all inputs. Otherwise the default value of register
