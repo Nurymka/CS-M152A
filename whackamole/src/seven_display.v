@@ -23,7 +23,7 @@ reg [3:0] an_ = 0;
 reg[27:0] fast_counter = 0;
 
 /////////////////////////////////
-parameter cutoff_fast = 100; //Simulation change back to 
+parameter cutoff_fast = 500000;  
 //////////////////////////////////
 
 assign seg = seg_;
