@@ -22,7 +22,12 @@ module main(
 	//inputs
 clk, btnUp, btnDown, btnLeft, btnRight, btnCenter, sw, 
 	//outputs
-led, seg, an);
+led, seg, an, hsync,
+  vsync,
+  red,
+  green,
+  blue);
+
 
 input clk;
 input btnUp;
@@ -32,9 +37,25 @@ input btnRight;
 input btnCenter;
 input sw;
 
+
+
+
 output [7:0] led;
 output [7:0] seg;
 output [3:0] an;
+
+// display
+output hsync;
+output vsync;
+output [2:0] red;
+output [2:0] green;
+output [1:0] blue;
+
+// clocks
+wire clk_pixel;
+wire clk_blink;
+
+
 
 wire restart_game;
 wire guess_now;
@@ -54,6 +75,9 @@ wire [3:0] digit_3;
 wire [3:0] digit_2;
 wire [3:0] digit_1;
 
+wire [3:0] vga_digit_2;
+wire [3:0] vga_digit_1;
+
 
 /*
 //TODO: change seg display to show seconds countdown
@@ -67,7 +91,9 @@ assign digit_3 = (seconds / 10) % 10;
 assign digit_2 = 0;
 assign digit_1 = 0;
 
-
+assign vga_digit_2 = score % 10;
+assign vga_digit_1 = (score / 10) % 10;
+ 
 user_input user_input(
 		.clk(clk), 
 		.btnUp(btnUp), 
@@ -133,6 +159,28 @@ seven_display seven_display(
 		.seg(seg), 
 		.an(an)
 	);
+
+
+clocks clocks0 (.rst(restart_game), .master_clk(clk), .clk_pixel(clk_pixel), .clk_blink(clk_blink));
+
+
+vga_display vga0 (
+  .clk(clk),
+  .clk_pixel(clk_pixel),
+  .clk_blink(clk_blink),
+  .rst(restart_game),
+  .digit_1(vga_digit_1),
+  .digit_2(vga_digit_2),
+  .mole_position(mole_pos),
+  .guess_correct(guess_correct),
+  .guess_wrong(guess_wrong),
+  .hsync(hsync),
+  .vsync(vsync),
+  .red(red),
+  .blue(blue),
+  .green(green)
+);
+
 
 
 endmodule
