@@ -20,14 +20,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 module mole_position( 
     //inputs
-	 i_clk, i_change_position,
+	 i_clk, i_restart_game, i_change_position, i_game_over,
 	 //outputs
 	 o_mole_position, o_position_changed
 	 );
 
 // signals
 input i_clk;
+input i_restart_game;
 input i_change_position;
+input i_game_over;
 
 // 1hz counter	
 reg[27:0] counter_ = 0;
@@ -48,33 +50,41 @@ output reg o_position_changed = 0;
 
 
 always @ (posedge i_clk) begin
-	
-	// cycle the random position array
-	rand_next_[4] = rand_[4]^rand_[1];
-	rand_next_[3] = rand_[3]^rand_[0];
-	rand_next_[2] = rand_[2]^rand_next_[4];
-	rand_next_[1] = rand_[1]^rand_next_[3];
-	rand_next_[0] = rand_[0]^rand_next_[2];
-	rand_ = rand_next_;
-	
-	// counting for 1 second
-	counter_ = counter_ + 1;
-	
-	if(i_change_position || counter_ == cutoff_1hz) begin
-		// reset 1 second counter
+	if(i_restart_game) begin
 		counter_ = 0;
+		rand_ = 15;
+		o_position_changed = 0;
+	end
+	else if(!i_game_over) begin
+		// cycle the random position array
+		rand_next_[4] = rand_[4]^rand_[1];
+		rand_next_[3] = rand_[3]^rand_[0];
+		rand_next_[2] = rand_[2]^rand_next_[4];
+		rand_next_[1] = rand_[1]^rand_next_[3];
+		rand_next_[0] = rand_[0]^rand_next_[2];
+		rand_ = rand_next_;
 		
-		// change mole position with a new random position
-		o_mole_position = rand_ % 5;
+		// counting for 1 second
+		counter_ = counter_ + 1;
 		
-		// signal the mole changed
-		o_position_changed = 1;
-		
+		if(i_change_position || counter_ == cutoff_1hz) begin
+			// reset 1 second counter
+			counter_ = 0;
+			
+			// change mole position with a new random position
+			o_mole_position = rand_ % 5;
+			
+			// signal the mole changed
+			o_position_changed = 1;
+			
+		end
+		else begin
+			o_position_changed = 0;
+		end
 	end
 	else begin
 		o_position_changed = 0;
 	end
-	
 end
 
 endmodule

@@ -42,15 +42,19 @@ output [4:0] seconds;
 output wire game_over;
 
 
-//TODO: stop everything on game_over
+
 //TODO: simulation to check game_over works
 //TODO: simulation to check restart_game works
 //TODO: clean up project files into proper folder
 //TODO: upload to github
 
+//TODO: make sure user_input module sends eval_now signal for only 1 or 2 clock cycles
+
 mole_position mole_position(
 		.i_clk(clk), 
-		.i_change_position(guess_correct), 
+		.i_restart_game(restart_game),
+		.i_change_position(guess_correct),
+		.i_game_over(game_over),
 		.o_mole_position(mole_pos), 
 		.o_position_changed(mole_change)
 	);
@@ -60,8 +64,9 @@ score_evaluation score_evaluation(
 		.user_guess(user_guess), 
 		.mole_pos(mole_pos), 
 		.eval_now(eval_now), 
-		.rst(rst), 
-		.mole_change(mole_change), 
+		.i_restart_game(restart_game), 
+		.mole_change(mole_change),
+		.i_game_over(game_over),		
 		.score(score), 
 		.guess_correct(guess_correct), 
 		.guess_wrong(guess_wrong), 
@@ -70,17 +75,19 @@ score_evaluation score_evaluation(
 
 countdown_timer countdown (
 		.clk(clk), 
-		.restart_game(restart_game), 
+		.i_restart_game(restart_game), 
 		.seconds(seconds), 
 		.game_over(game_over)
 	);
 								
 led_display led_display (
 		.i_clk(clk), 
+		.i_restart_game(restart_game),
 		.i_user_guess(user_guess), 
 		.i_mole_position(mole_pos), 
 		.i_user_right(guess_correct), 
 		.i_user_wrong(guess_wrong), 
+		.i_game_over(game_over),
 		.leds(led)
 	);
 

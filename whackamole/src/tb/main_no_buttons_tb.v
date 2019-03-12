@@ -32,15 +32,17 @@ module main_no_buttons_tb;
 	
 
 	// Outputs
-	wire [2:0] mole_pos;
+	wire [7:0] score;
+	wire [4:0] seconds;
+	wire game_over;
 	wire mole_change;
 	wire guess_correct;
 	wire guess_wrong;
 	wire guess_now;
-	wire [7:0] score;
+	wire [2:0] mole_pos;
 	wire [7:0] led;
-	wire [4:0] seconds;
-	wire game_over;
+	
+	
 
 	// Instantiate the Unit Under Test (UUT)
 	main_no_buttons uut (
@@ -76,30 +78,69 @@ module main_no_buttons_tb;
 		#100;
 		
 		// Wait, let the mole move around
-		#50000;
+		#500000;
 		
 		// Guess correct
-		#1000;
+		#10000;
 		user_guess = mole_pos;
 		eval_now = 1;
 		#10 eval_now = 0;
 		
 		// Wait again
-		#30000;
+		#300000;
 		
 		// Guess wrong
-		#1000;
+		#10000;
 		user_guess = mole_pos + 1;
 		eval_now = 1;
 		#10 eval_now = 0;
 		
 		// Try to guess during block, should not work
-		#3000;
+		#30000;
 		user_guess = mole_pos;
 		eval_now = 1;
 		#10  eval_now = 0;
 		
-
+		// Wait for game over
+		#4000000;
+		// Try to press button while game over
+		user_guess = 2;
+		eval_now = 1;
+		#10 eval_now = 0;
+		
+		// Restart game
+		#1000000;
+		restart_game = 1;
+		#500000;
+		restart_game = 0;
+		
+		#120000;
+		// Guess correct
+		user_guess = mole_pos;
+		eval_now = 1;
+		#10 eval_now = 0;
+		
+		
+		#120000;
+		// Guess correct
+		user_guess = mole_pos;
+		eval_now = 1;
+		#10 eval_now = 0;
+		
+		#120000;
+		// Guess correct
+		user_guess = mole_pos;
+		eval_now = 1;
+		#10 eval_now = 0;
+		
+		
+		#120000;
+		// Guess correct
+		user_guess = mole_pos;
+		eval_now = 1;
+		#10 eval_now = 0;
+		
+		
 		
 	end
       

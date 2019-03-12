@@ -18,15 +18,20 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module score_evaluation(clk, user_guess, mole_pos, eval_now, rst, mole_change, score, guess_correct, guess_wrong, guess_now);
+module score_evaluation(
+	//inputs
+	clk, user_guess, mole_pos, eval_now, i_restart_game, mole_change, i_game_over, 
+	//outputs
+	score, guess_correct, guess_wrong, guess_now);
 
 //Inputs
 input clk;
 input [2:0] user_guess;
 input [2:0] mole_pos;
 input eval_now;
-input rst;
+input i_restart_game;
 input mole_change;
+input i_game_over;
 
 // Outputs
 output reg [7:0] score = 0;
@@ -45,7 +50,8 @@ parameter block_cutoff = 10000; // SIMULATAION, change back to 100,000,000
 
 
 always @ (posedge clk) begin
-	if(rst) begin
+	// Reset the game
+	if(i_restart_game) begin
 		score = 0;
 		guess_correct = 0;
 		guess_wrong = 0;
@@ -53,33 +59,49 @@ always @ (posedge clk) begin
 		block_counter = 0;
 		blocked_state = 0;
 	end
-	else if(blocked_state) begin
-		if(block_counter < block_cutoff) begin
-			block_counter = block_counter + 1;
-			guess_wrong = 0;
+	// During game play
+	else if(!i_game_over) begin
+		// blocked from the last incorrect guess
+		if(blocked_state) begin
+			// 1 second counter for blocked state
+			if(block_counter < block_cutoff) begin
+				block_counter = block_counter + 1;
+				guess_wrong = 0;
+			end
+			// blocked state over, user can guess again
+			else begin
+				blocked_state = 0;
+				guess_now = 1;
+			end
 		end
-		else begin
-			blocked_state = 0;
-			guess_now = 1;
+		// User pressed a button while not blocked
+		else if(eval_now && !blocked_state) begin
+			// Correct guess increases the score
+			if(user_guess == mole_pos) begin
+				guess_correct = 1;
+				guess_wrong = 0;
+				score = score + 1;
+			end
+			// Wrong guess blocks the user for 1 second
+			else begin
+				guess_correct = 0;
+				guess_wrong = 1;
+				guess_now = 0;
+				blocked_state = 1;
+				block_counter = 0;
+			end
 		end
-	end
-	else if(eval_now && !blocked_state) begin
-		if(user_guess == mole_pos) begin
-			guess_correct = 1;
-			guess_wrong = 0;
-			score = score + 1;
-		end
+		// Nothing is presed during non-blocked state
 		else begin
 			guess_correct = 0;
-			guess_wrong = 1;
-			guess_now = 0;
-			blocked_state = 1;
-			block_counter = 0;
+			guess_wrong = 0;
 		end
 	end
+	// Game over
 	else begin
 		guess_correct = 0;
 		guess_wrong = 0;
+		guess_now = 0;
 	end
 end
 
