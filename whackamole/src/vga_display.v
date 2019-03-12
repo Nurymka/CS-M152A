@@ -67,10 +67,8 @@ parameter right_y_pos = center_row_y_pos;
 parameter bot_x_pos = center_col_x_pos;
 parameter bot_y_pos = 340;
 
-parameter total_mole_num = 5;
 parameter integer mole_x_poses [4:0]  = {bot_x_pos, right_x_pos, center_x_pos, left_x_pos, top_x_pos};
-parameter integer mole_y_poses [4:0] = {bot_y_pos, right_y_pos, center_y_pos,
-left_y_pos, top_y_pos};
+parameter integer mole_y_poses [4:0] = {bot_y_pos, right_y_pos, center_y_pos, left_y_pos, top_y_pos};
 
 // registers for storing the horizontal & vertical counters
 reg [9:0] hc;
@@ -169,7 +167,7 @@ begin
 			begin
 				setColor(3'b111, 3'b111, 2'b00);
 			end
-		if (hc >= (hbp + left_x_pos) &&
+		else if (hc >= (hbp + left_x_pos) &&
 				hc < (hbp + left_x_pos + mole_slot_size) &&
 				vc >= (vbp + left_y_pos) &&
 				vc < (vbp + left_y_pos + mole_slot_size))
