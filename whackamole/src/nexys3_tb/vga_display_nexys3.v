@@ -53,9 +53,9 @@ wire clk_pixel;
 wire clk_blink;
 
 assign rst = sw[0];
-assign mole_position = 1;
+assign mole_position = 0;
 
-assign guess_correct = 1;
+assign guess_correct = 0;
 assign guess_wrong = 0;
 
 clocks clocks0 (.rst(rst), .master_clk(master_clk), .clk_pixel(clk_pixel), .clk_blink(clk_blink));
