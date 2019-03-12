@@ -68,8 +68,8 @@ parameter bot_x_pos = center_col_x_pos;
 parameter bot_y_pos = 340;
 
 parameter total_mole_num = 5;
-parameter integer mole_x_poses [total_mole_num-1:0]  = {bot_x_pos, right_x_pos, center_x_pos, left_x_pos, top_x_pos};
-parameter integer mole_y_poses [total_mole_num-1:0] = {bot_y_pos, right_y_pos, center_y_pos,
+parameter integer mole_x_poses [4:0]  = {bot_x_pos, right_x_pos, center_x_pos, left_x_pos, top_x_pos};
+parameter integer mole_y_poses [4:0] = {bot_y_pos, right_y_pos, center_y_pos,
 left_y_pos, top_y_pos};
 
 // registers for storing the horizontal & vertical counters
@@ -116,7 +116,7 @@ begin
 	end
 end
 
-always @(posedge clk_blink)
+always @(posedge clk_blink or posedge rst)
 begin
 	if (rst == 1)
 	begin
@@ -169,7 +169,7 @@ begin
 			begin
 				setColor(3'b111, 3'b111, 2'b00);
 			end
-		else if (hc >= (hbp + left_x_pos) &&
+		if (hc >= (hbp + left_x_pos) &&
 				hc < (hbp + left_x_pos + mole_slot_size) &&
 				vc >= (vbp + left_y_pos) &&
 				vc < (vbp + left_y_pos + mole_slot_size))
@@ -247,19 +247,19 @@ task setColor;
 	input [1:0] b;
 
 	begin
-		if (correct_on == 1)
+		if (correct_on)
 		begin
 			setGreen();
 		end
-		else if (wrong_on == 1)
+		else if (wrong_on)
 		begin
 			setRed();
 		end
 		else
 		begin
-			r = red;
-			g = green;
-			b = blue;
+			red = r;
+			green = g;
+			blue = b;
 		end
 	end
 endtask
