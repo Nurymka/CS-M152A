@@ -41,6 +41,9 @@ wire [2:0] mole_position;
 wire guess_correct;
 wire guess_wrong;
 
+wire [3:0] digit_1;
+wire [3:0] digit_2;
+
 // display
 output hsync;
 output vsync;
@@ -58,12 +61,17 @@ assign mole_position = 0;
 assign guess_correct = 0;
 assign guess_wrong = 0;
 
+assign digit_1 = 0;
+assign digit_2 = 0;
+
 clocks clocks0 (.rst(rst), .master_clk(master_clk), .clk_pixel(clk_pixel), .clk_blink(clk_blink));
 
 vga_display vga0 (
   .clk_pixel(clk_pixel),
   .clk_blink(clk_blink),
   .rst(rst),
+  .digit_1(digit_1),
+  .digit_2(digit_2),
   .mole_position(mole_position),
   .guess_correct(guess_correct),
   .guess_wrong(guess_wrong),

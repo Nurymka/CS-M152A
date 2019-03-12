@@ -22,10 +22,11 @@ module vga_display(
 	input wire clk_pixel,			//pixel clock: 25MHz
 	input wire clk_blink, // blink clock for correct/wrong flashes
 	input wire rst,			//asynchronous reset
-	input [7:0] score,
 	input [2:0] mole_position,
 	input wire guess_correct,
 	input wire guess_wrong,
+	input [3:0] digit_1,
+	input [3:0] digit_2,
 	output wire hsync,		//horizontal sync out
 	output wire vsync,		//vertical sync out
 	output reg [2:0] red,	//red vga output
@@ -69,6 +70,20 @@ parameter bot_y_pos = 340;
 
 parameter integer mole_x_poses [4:0]  = {bot_x_pos, right_x_pos, center_x_pos, left_x_pos, top_x_pos};
 parameter integer mole_y_poses [4:0] = {bot_y_pos, right_y_pos, center_y_pos, left_y_pos, top_y_pos};
+
+// Digit params
+
+parameter digit1_x_orig = 50;
+parameter digit1_y_orig = 40;
+
+parameter digit2_x_orig = 130;
+parameter digit2_y_orig = 40;
+
+parameter digit_x_size = 60;
+parameter digit_y_size = 110;
+
+parameter digit_offset = 10;
+
 
 // registers for storing the horizontal & vertical counters
 reg [9:0] hc;
@@ -207,6 +222,10 @@ begin
 			begin
 				setBlack();
 			end
+		
+		drawDigit(digit_1, 0);
+		drawDigit(digit_2, 1);
+
 	end
 	// we're outside active vertical range so display black
 	else
@@ -259,6 +278,47 @@ task setColor;
 			green = g;
 			blue = b;
 		end
+	end
+endtask
+
+task drawDigit;
+	input [3:0] digit;
+	input pos; // 0 - first digit, 1 - second digit
+
+	reg [31:0] orig_x;
+	reg [31:0] orig_y;
+
+	begin
+		if (pos == 0)
+		begin
+			orig_x = digit1_x_orig;
+			orig_y = digit1_y_orig;
+		end
+		else
+		begin
+			orig_x = digit2_x_orig;
+			orig_y = digit2_y_orig;
+		end
+
+		if (digit == 0) begin
+			if (hc >= (hbp + orig_x) &&
+					hc < (hbp + orig_x + digit_x_size) &&
+					vc >= (vbp + orig_y) &&
+					vc < (vbp + orig_y + digit_y_size))
+				begin
+					setColor(3'b111, 3'b111, 2'b11);
+				end
+			
+			if (hc >= (hbp + orig_x + digit_offset) &&
+					hc < (hbp + orig_x + digit_x_size - digit_offset) &&
+					vc >= (vbp + orig_y + digit_offset) &&
+					vc < (vbp + orig_y + digit_y_size - digit_offset))
+				begin
+					setBlack();
+				end
+			else ;
+		end
+		else ;
 	end
 endtask
 
