@@ -19,6 +19,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 module vga_display(
+	input wire clk,
 	input wire clk_pixel,			//pixel clock: 25MHz
 	input wire clk_blink, // blink clock for correct/wrong flashes
 	input wire rst,			//asynchronous reset
@@ -131,26 +132,39 @@ begin
 	end
 end
 
-always @(posedge clk_blink or posedge rst)
-begin
-	if (rst == 1)
-	begin
-		correct_on = 0;
-		wrong_on = 0;	
-	end
-	else
-	begin
-		if (guess_correct && !correct_on)
-			correct_on = 1;
-		else if (correct_on)
-			correct_on = 0;
-		else ;
+reg [27:0] blink_counter = 0;
+parameter cutoff_blink_wrong = 100000000;
+parameter cutoff_blink_correct = 10000000;
 
-		if (guess_wrong && !wrong_on)
-			wrong_on = 1;
-		else if (wrong_on)
+//TODO: guess correct/wrong detection
+always @(posedge clk) begin
+	if(rst) begin
+		correct_on = 0;
+		wrong_on = 0;
+		blink_counter = 0;
+	end
+	else if (guess_correct) begin
+		blink_counter = 0;
+		correct_on = 1;
+		wrong_on = 0;
+	end
+	else if (guess_wrong) begin
+		blink_counter = 0;
+		correct_on = 0;
+		wrong_on = 1;
+	end
+	else begin
+		if(correct_on && blink_counter == cutoff_blink_correct) begin
+			correct_on = 0;
 			wrong_on = 0;
-		else ;
+		end
+		else if(wrong_on && blink_counter == cutoff_blink_wrong) begin
+			correct_on = 0;
+			wrong_on = 0;
+		end
+		else begin
+			blink_counter = blink_counter + 1;
+		end
 	end
 end
 

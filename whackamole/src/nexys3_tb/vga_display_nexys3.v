@@ -64,11 +64,11 @@ assign guess_wrong = 0;
 assign digit_1 = 8;
 assign digit_2 = 9;
 
-clocks clocks0 (.rst(rst), .master_clk(master_clk), .clk_pixel(clk_pixel), .clk_blink(clk_blink));
+clocks clocks0 (.rst(rst), .master_clk(master_clk), .clk_pixel(clk_pixel));
 
 vga_display vga0 (
+  .clk(master_clk),
   .clk_pixel(clk_pixel),
-  .clk_blink(clk_blink),
   .rst(rst),
   .digit_1(digit_1),
   .digit_2(digit_2),
