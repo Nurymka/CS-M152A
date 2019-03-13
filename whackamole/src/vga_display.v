@@ -19,15 +19,15 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 module vga_display(
-    input wire clk,
+	input wire clk,
 	input wire clk_pixel,			//pixel clock: 25MHz
 	input wire clk_blink, // blink clock for correct/wrong flashes
 	input wire rst,			//asynchronous reset
-	input [3:0] digit_1,
-    input [3:0] digit_2,
 	input [2:0] mole_position,
 	input wire guess_correct,
 	input wire guess_wrong,
+	input [3:0] digit_1,
+	input [3:0] digit_2,
 	output wire hsync,		//horizontal sync out
 	output wire vsync,		//vertical sync out
 	output reg [2:0] red,	//red vga output
@@ -72,6 +72,22 @@ parameter bot_y_pos = 340;
 parameter integer mole_x_poses [4:0]  = {bot_x_pos, right_x_pos, center_x_pos, left_x_pos, top_x_pos};
 parameter integer mole_y_poses [4:0] = {bot_y_pos, right_y_pos, center_y_pos, left_y_pos, top_y_pos};
 
+// Digit params
+
+parameter digit1_x_orig = 50;
+parameter digit1_y_orig = 40;
+
+parameter digit2_x_orig = 130;
+parameter digit2_y_orig = 40;
+
+parameter digit_x_size = 60;
+parameter digit_y_size = 110;
+
+parameter digit_offset = 10;
+
+parameter digit_y_mid = 100;
+
+
 // registers for storing the horizontal & vertical counters
 reg [9:0] hc;
 reg [9:0] vc;
@@ -79,11 +95,6 @@ reg [9:0] vc;
 // guess signals
 reg correct_on;
 reg wrong_on;
-
-// regs for detection of correct/wrong
-reg detect_correct = 0;
-reg detect_wrong = 0;
-
 
 // Horizontal & vertical counters --
 // this is how we keep track of where we are on the screen.
@@ -121,7 +132,6 @@ begin
 	end
 end
 
-
 reg [27:0] blink_counter = 0;
 parameter cutoff_blink_wrong = 100000000;
 parameter cutoff_blink_correct = 10000000;
@@ -157,56 +167,7 @@ always @(posedge clk) begin
 		end
 	end
 end
-	
 
-/*
-
-    if(guess_correct) begin
-        detect_correct = 1;
-        detect_wrong = 0;
-    end
-    else if(guess_wrong) begin
-        detect_wrong = 1;
-        detect_correct = 0;
-    end
-    else begin
-        if(correct_on) begin
-            detect_correct = 0;
-        end
-        else if(wrong_on) begin
-            detect_wrong = 0;
-        end
-        else begin
-            ;
-        end
-    end
-end
-*/
-/*
-// Replaced guess_correct with detect_correct
-always @(posedge clk_blink or posedge rst)
-begin
-	if (rst == 1)
-	begin
-		correct_on = 0;
-		wrong_on = 0;	
-	end
-	else
-	begin
-		if (detect_correct && !correct_on) // guess_correct
-			correct_on = 1;
-		else if (correct_on)
-			correct_on = 0;
-		else ;
-
-		if (detect_wrong && !wrong_on) // guess_wrong
-			wrong_on = 1;
-		else if (wrong_on)
-			wrong_on = 0;
-		else ;
-	end
-end
-*/
 // generate sync pulses (active low)
 // ----------------
 // "assign" statements are a quick way to
@@ -277,6 +238,10 @@ begin
 			begin
 				setBlack();
 			end
+		
+		drawDigit(digit_1, 0);
+		drawDigit(digit_2, 1);
+
 	end
 	// we're outside active vertical range so display black
 	else
@@ -329,6 +294,317 @@ task setColor;
 			green = g;
 			blue = b;
 		end
+	end
+endtask
+
+task drawDigit;
+	input [3:0] digit;
+	input pos; // 0 - first digit, 1 - second digit
+
+	reg [31:0] orig_x;
+	reg [31:0] orig_y;
+
+	begin
+		if (pos == 0)
+		begin
+			orig_x = digit1_x_orig;
+			orig_y = digit1_y_orig;
+		end
+		else
+		begin
+			orig_x = digit2_x_orig;
+			orig_y = digit2_y_orig;
+		end
+
+		if (digit == 0) begin
+			// outer rect
+			if (hc >= (hbp + orig_x) &&
+					hc < (hbp + orig_x + digit_x_size) &&
+					vc >= (vbp + orig_y) &&
+					vc < (vbp + orig_y + digit_y_size))
+				begin
+					setColor(3'b111, 3'b111, 2'b11);
+				end
+			else ;
+			
+			// inner rect
+			if (hc >= (hbp + orig_x + digit_offset) &&
+					hc < (hbp + orig_x + digit_x_size - digit_offset) &&
+					vc >= (vbp + orig_y + digit_offset) &&
+					vc < (vbp + orig_y + digit_y_size - digit_offset))
+				begin
+					setBlack();
+				end
+			else ;
+		end
+		else if (digit == 1)
+		begin
+		  // outer rect
+			if (hc >= (hbp + orig_x) &&
+					hc < (hbp + orig_x + digit_x_size) &&
+					vc >= (vbp + orig_y) &&
+					vc < (vbp + orig_y + digit_y_size))
+				begin
+					setColor(3'b111, 3'b111, 2'b11);
+				end
+			else ;
+			
+			// inner left rect
+			if (hc >= (hbp + orig_x) &&
+					hc < (hbp + orig_x + digit_x_size - digit_offset) &&
+					vc >= (vbp + orig_y) &&
+					vc < (vbp + orig_y + digit_y_size))
+				begin
+					setBlack();
+				end
+			else ;
+		end
+		else if (digit == 2)
+		begin
+			// outer rect
+			if (hc >= (hbp + orig_x) &&
+					hc < (hbp + orig_x + digit_x_size) &&
+					vc >= (vbp + orig_y) &&
+					vc < (vbp + orig_y + digit_y_size))
+				begin
+					setColor(3'b111, 3'b111, 2'b11);
+				end
+			else ;
+			
+			// top left inner rect
+			if (hc >= (hbp + orig_x) &&
+					hc < (hbp + orig_x + digit_x_size - digit_offset) &&
+					vc >= (vbp + orig_y + digit_offset) &&
+					vc < (vbp + digit_y_mid - digit_offset))
+				begin
+					setBlack();
+				end
+			else ;
+
+			// bot right inner rect
+			if (hc >= (hbp + orig_x + digit_offset) &&
+					hc < (hbp + orig_x + digit_x_size) &&
+					vc >= (vbp + digit_y_mid) &&
+					vc < (vbp + orig_y + digit_y_size - digit_offset))
+				begin
+					setBlack();
+				end
+			else ;
+		end
+		else if (digit == 3)
+		begin
+			// outer rect
+			if (hc >= (hbp + orig_x) &&
+					hc < (hbp + orig_x + digit_x_size) &&
+					vc >= (vbp + orig_y) &&
+					vc < (vbp + orig_y + digit_y_size))
+				begin
+					setColor(3'b111, 3'b111, 2'b11);
+				end
+			else ;
+			
+			// top left inner rect
+			if (hc >= (hbp + orig_x) &&
+					hc < (hbp + orig_x + digit_x_size - digit_offset) &&
+					vc >= (vbp + orig_y + digit_offset) &&
+					vc < (vbp + digit_y_mid - digit_offset))
+				begin
+					setBlack();
+				end
+			else ;
+
+			// bot left inner rect
+			if (hc >= (hbp + orig_x) &&
+					hc < (hbp + orig_x + digit_x_size - digit_offset) &&
+					vc >= (vbp + digit_y_mid) &&
+					vc < (vbp + orig_y + digit_y_size - digit_offset))
+				begin
+					setBlack();
+				end
+			else ;
+		end
+		else if (digit == 4)
+		begin
+			// outer rect
+			if (hc >= (hbp + orig_x) &&
+					hc < (hbp + orig_x + digit_x_size) &&
+					vc >= (vbp + orig_y) &&
+					vc < (vbp + orig_y + digit_y_size))
+				begin
+					setColor(3'b111, 3'b111, 2'b11);
+				end
+			else ;
+			
+			// top center inner rect
+			if (hc >= (hbp + orig_x + digit_offset) &&
+					hc < (hbp + orig_x + digit_x_size - digit_offset) &&
+					vc >= (vbp + orig_y) &&
+					vc < (vbp + digit_y_mid - digit_offset))
+				begin
+					setBlack();
+				end
+			else ;
+
+			// bot left inner rect
+			if (hc >= (hbp + orig_x) &&
+					hc < (hbp + orig_x + digit_x_size - digit_offset) &&
+					vc >= (vbp + digit_y_mid) &&
+					vc < (vbp + orig_y + digit_y_size))
+				begin
+					setBlack();
+				end
+			else ;
+		end
+		else if (digit == 5)
+		begin
+			// outer rect
+			if (hc >= (hbp + orig_x) &&
+					hc < (hbp + orig_x + digit_x_size) &&
+					vc >= (vbp + orig_y) &&
+					vc < (vbp + orig_y + digit_y_size))
+				begin
+					setColor(3'b111, 3'b111, 2'b11);
+				end
+			else ;
+			
+			// top right inner rect
+			if (hc >= (hbp + orig_x + digit_offset) &&
+					hc < (hbp + orig_x + digit_x_size) &&
+					vc >= (vbp + orig_y + digit_offset) &&
+					vc < (vbp + digit_y_mid - digit_offset))
+				begin
+					setBlack();
+				end
+			else ;
+
+			// bot left inner rect
+			if (hc >= (hbp + orig_x) &&
+					hc < (hbp + orig_x + digit_x_size - digit_offset) &&
+					vc >= (vbp + digit_y_mid) &&
+					vc < (vbp + orig_y + digit_y_size - digit_offset))
+				begin
+					setBlack();
+				end
+			else ;
+		end
+		else if (digit == 6)
+		begin
+			// outer rect
+			if (hc >= (hbp + orig_x) &&
+					hc < (hbp + orig_x + digit_x_size) &&
+					vc >= (vbp + orig_y) &&
+					vc < (vbp + orig_y + digit_y_size))
+				begin
+					setColor(3'b111, 3'b111, 2'b11);
+				end
+			else ;
+			
+			// top right inner rect
+			if (hc >= (hbp + orig_x + digit_offset) &&
+					hc < (hbp + orig_x + digit_x_size) &&
+					vc >= (vbp + orig_y) &&
+					vc < (vbp + digit_y_mid - digit_offset))
+				begin
+					setBlack();
+				end
+			else ;
+
+			// bot inner rect
+			if (hc >= (hbp + orig_x + digit_offset) &&
+					hc < (hbp + orig_x + digit_x_size - digit_offset) &&
+					vc >= (vbp + digit_y_mid) &&
+					vc < (vbp + orig_y + digit_y_size - digit_offset))
+				begin
+					setBlack();
+				end
+			else ;
+		end
+		else if (digit == 7)
+		begin
+			// outer rect
+			if (hc >= (hbp + orig_x) &&
+					hc < (hbp + orig_x + digit_x_size) &&
+					vc >= (vbp + orig_y) &&
+					vc < (vbp + orig_y + digit_y_size))
+				begin
+					setColor(3'b111, 3'b111, 2'b11);
+				end
+			else ;
+			
+			// bot left inner rect
+			if (hc >= (hbp + orig_x) &&
+					hc < (hbp + orig_x + digit_x_size - digit_offset) &&
+					vc >= (vbp + orig_y + digit_offset) &&
+					vc < (vbp + orig_y + digit_y_size))
+				begin
+					setBlack();
+				end
+			else ;
+		end
+		else if (digit == 8)
+		begin
+			// outer rect
+			if (hc >= (hbp + orig_x) &&
+					hc < (hbp + orig_x + digit_x_size) &&
+					vc >= (vbp + orig_y) &&
+					vc < (vbp + orig_y + digit_y_size))
+				begin
+					setColor(3'b111, 3'b111, 2'b11);
+				end
+			else ;
+			
+			// top center inner rect
+			if (hc >= (hbp + orig_x + digit_offset) &&
+					hc < (hbp + orig_x + digit_x_size - digit_offset) &&
+					vc >= (vbp + orig_y + digit_offset) &&
+					vc < (vbp + digit_y_mid - digit_offset))
+				begin
+					setBlack();
+				end
+			else ;
+
+			// bot center inner rect
+			if (hc >= (hbp + orig_x + digit_offset) &&
+					hc < (hbp + orig_x + digit_x_size - digit_offset) &&
+					vc >= (vbp + digit_y_mid) &&
+					vc < (vbp + orig_y + digit_y_size - digit_offset))
+				begin
+					setBlack();
+				end
+			else ;
+		end
+		else if (digit == 9)
+		begin
+			// outer rect
+			if (hc >= (hbp + orig_x) &&
+					hc < (hbp + orig_x + digit_x_size) &&
+					vc >= (vbp + orig_y) &&
+					vc < (vbp + orig_y + digit_y_size))
+				begin
+					setColor(3'b111, 3'b111, 2'b11);
+				end
+			else ;
+			
+			// top center inner rect
+			if (hc >= (hbp + orig_x + digit_offset) &&
+					hc < (hbp + orig_x + digit_x_size - digit_offset) &&
+					vc >= (vbp + orig_y + digit_offset) &&
+					vc < (vbp + digit_y_mid - digit_offset))
+				begin
+					setBlack();
+				end
+			else ;
+
+			// bot left inner rect
+			if (hc >= (hbp + orig_x) &&
+					hc < (hbp + orig_x + digit_x_size - digit_offset) &&
+					vc >= (vbp + digit_y_mid) &&
+					vc < (vbp + orig_y + digit_y_size))
+				begin
+					setBlack();
+				end
+			else ;
+		end	
 	end
 endtask
 

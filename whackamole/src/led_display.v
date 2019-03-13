@@ -101,50 +101,53 @@ always @(posedge i_clk) begin
 	end
 	else begin
 		// always display user guess 
-		leds[2:0] = i_user_guess;
+		//leds[2:0] = i_user_guess;
 		// always display mole position
-		leds[5:3] = i_mole_position;
+		//leds[5:3] = i_mole_position;
 		// flashing animation
 		if(correct_animation) begin
 			if(animation_counter < animation_cutoff) begin
 				if(animation_counter < correct_cutoff_1) begin //flash on
-					leds[7:6] = 2'b11;
-                    //leds = 8'b11111111;
+					//leds[7:6] = 2'b11;
+                    leds = 8'b11111111;
 				end
 				else if(animation_counter < correct_cutoff_2) begin //flash off
-					leds[7:6] = 2'b00;
-                    //leds = 8'b00000000;
+					//leds[7:6] = 2'b00;
+                    leds = 8'b00000000;
 				end
 				else if(animation_counter < correct_cutoff_3) begin //flash on
-					leds[7:6] = 2'b11;
-                    //leds = 8'b11111111;
+					//leds[7:6] = 2'b11;
+                    leds = 8'b11111111;
 				end
 				else if(animation_counter < correct_cutoff_4) begin //flash off
-					leds[7:6] = 2'b00;
-                    //leds = 8'b00000000;
+					//leds[7:6] = 2'b00;
+                    leds = 8'b00000000;
 				end
 				else begin //flash on
-					leds[7:6] = 2'b11;
-                    //leds = 8'b11111111;
+					//leds[7:6] = 2'b11;
+                    leds = 8'b11111111;
 				end
 			end
 			else begin
-				leds[7:6] = 2'b00;
-                //leds = 8'b00000000;
+				//leds[7:6] = 2'b00;
+                leds = 8'b00000000;
 			end
 		end
 		// solid animation
 		else if(wrong_animation) begin
 			if(animation_counter < animation_cutoff) begin
-				leds[7:6] = 2'b11;
+				//leds[7:6] = 2'b11;
+				leds = 8'b11111111;
 			end
 			else begin
-				leds[7:6] = 2'b00;
+				//leds[7:6] = 2'b00;
+				leds = 8'b00000000;
 			end
 		end
 		// no animation
 		else begin
-			leds[7:6] = 2'b00;
+			//leds[7:6] = 2'b00;
+			leds = 8'b00000000;
 		end
 	end
 end
