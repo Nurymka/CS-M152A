@@ -167,9 +167,8 @@ clocks clocks0 (.rst(restart_game), .master_clk(clk), .clk_pixel(clk_pixel), .cl
 vga_display vga0 (
   .clk(clk),
   .clk_pixel(clk_pixel),
-  .clk_blink(clk_blink),
   .rst(restart_game),
-  //.game_over(game_over),
+  .game_over(game_over),
   .digit_1(vga_digit_1),
   .digit_2(vga_digit_2),
   .mole_position(mole_pos),
