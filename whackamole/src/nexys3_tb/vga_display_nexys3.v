@@ -40,6 +40,7 @@ wire rst;
 wire [2:0] mole_position;
 wire guess_correct;
 wire guess_wrong;
+wire game_over;
 
 wire [3:0] digit_1;
 wire [3:0] digit_2;
@@ -60,6 +61,7 @@ assign mole_position = 0;
 
 assign guess_correct = 0;
 assign guess_wrong = 0;
+assign game_over = 1;
 
 assign digit_1 = 8;
 assign digit_2 = 9;
@@ -75,6 +77,7 @@ vga_display vga0 (
   .mole_position(mole_position),
   .guess_correct(guess_correct),
   .guess_wrong(guess_wrong),
+  .game_over(game_over), 
   .hsync(hsync),
   .vsync(vsync),
   .red(red),

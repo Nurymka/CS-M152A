@@ -21,11 +21,11 @@
 module vga_display(
 	input wire clk,
 	input wire clk_pixel,			//pixel clock: 25MHz
-	input wire clk_blink, // blink clock for correct/wrong flashes
 	input wire rst,			//asynchronous reset
 	input [2:0] mole_position,
 	input wire guess_correct,
 	input wire guess_wrong,
+	input wire game_over,
 	input [3:0] digit_1,
 	input [3:0] digit_2,
 	output wire hsync,		//horizontal sync out
@@ -95,6 +95,8 @@ reg [9:0] vc;
 // guess signals
 reg correct_on;
 reg wrong_on;
+reg game_over_trig;
+reg game_over_on = 0;
 
 // Horizontal & vertical counters --
 // this is how we keep track of where we are on the screen.
@@ -135,6 +137,7 @@ end
 reg [27:0] blink_counter = 0;
 parameter cutoff_blink_wrong = 100000000;
 parameter cutoff_blink_correct = 10000000;
+parameter cutoff_blink_gameover = 50000000;
 
 //TODO: guess correct/wrong detection
 always @(posedge clk) begin
@@ -142,6 +145,8 @@ always @(posedge clk) begin
 		correct_on = 0;
 		wrong_on = 0;
 		blink_counter = 0;
+		game_over_trig = 0;
+		game_over_on = 0;
 	end
 	else if (guess_correct) begin
 		blink_counter = 0;
@@ -153,12 +158,19 @@ always @(posedge clk) begin
 		correct_on = 0;
 		wrong_on = 1;
 	end
+	else if (game_over) begin
+		blink_counter = 0;
+		game_over_trig = 1;
+	end
 	else begin
-		if(correct_on && blink_counter == cutoff_blink_correct) begin
+		if (game_over_trig && blink_counter == cutoff_blink_gameover) begin
+			blink_counter = 0;
+		end
+		else if (correct_on && blink_counter == cutoff_blink_correct) begin
 			correct_on = 0;
 			wrong_on = 0;
 		end
-		else if(wrong_on && blink_counter == cutoff_blink_wrong) begin
+		else if (wrong_on && blink_counter == cutoff_blink_wrong) begin
 			correct_on = 0;
 			wrong_on = 0;
 		end
@@ -274,13 +286,25 @@ task setRed;
 	end
 endtask
 
+task setOrange;
+	begin
+		red = 3'b111;
+		green = 3'b100;
+		blue = 2'b00;
+	end
+endtask
+
 task setColor;
 	input [2:0] r;
 	input [2:0] g;
 	input [1:0] b;
 
 	begin
-		if (correct_on)
+		if (game_over_on)
+		begin
+			setOrange();
+		end
+		else if (correct_on)
 		begin
 			setGreen();
 		end
