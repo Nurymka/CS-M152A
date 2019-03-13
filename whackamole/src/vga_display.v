@@ -95,8 +95,7 @@ reg [9:0] vc;
 // guess signals
 reg correct_on;
 reg wrong_on;
-reg game_over_trig;
-reg game_over_on = 0;
+reg game_over_on;
 
 // Horizontal & vertical counters --
 // this is how we keep track of where we are on the screen.
@@ -145,14 +144,7 @@ always @(posedge clk) begin
 		correct_on = 0;
 		wrong_on = 0;
 		blink_counter = 0;
-		game_over_trig = 0;
 		game_over_on = 0;
-	end
-	else if (game_over) begin
-		blink_counter = 0;
-		correct_on = 0;
-		wrong_on = 0;
-		game_over_trig = 1;
 	end
 	else if (guess_correct) begin
 		blink_counter = 0;
@@ -165,7 +157,7 @@ always @(posedge clk) begin
 		wrong_on = 1;
 	end
 	else begin
-		if (game_over_trig && blink_counter == cutoff_blink_gameover) begin
+		if (game_over && blink_counter == cutoff_blink_gameover) begin
 			game_over_on = !game_over_on;
 			blink_counter = 0;
 		end
